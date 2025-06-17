@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['sampledata_0',['SampleData',['../classSampleData.html#ac7ea04e4df925f0e093c51d715c48b50',1,'SampleData']]],
+  ['scrollercoordtotime_1',['ScrollerCoordToTime',['../classwxTimelineCtrl.html#a1aadcdb02a33c08866c83d14f8f3b3b2',1,'wxTimelineCtrl']]],
+  ['scrollertimetocoord_2',['ScrollerTimeToCoord',['../classwxTimelineCtrl.html#af682a54a2fcb58b8170314f6d3f6bb9d',1,'wxTimelineCtrl']]],
+  ['selectitem_3',['SelectItem',['../classwxTimelineCtrl.html#a4d69c7a11cf4f2bc5d4ff31340016dbb',1,'wxTimelineCtrl']]],
+  ['senditemevent_4',['SendItemEvent',['../classwxTimelineCtrl.html#a9b0e2a00c9bce93a5c4354a508d654dc',1,'wxTimelineCtrl']]],
+  ['setbackgroundcolour_5',['SetBackgroundColour',['../classTimelineArtProvider.html#a899ef0eee0875031470b56fd8ab88c91',1,'TimelineArtProvider']]],
+  ['setcolour_6',['SetColour',['../classTimelineItem.html#a820ac9a8c85ecc0653a7de7fb9d5cbc5',1,'TimelineItem']]],
+  ['setdefaultduration_7',['SetDefaultDuration',['../classwxTimelineCtrl.html#a77450c34c82a7bca0ba46a409c14333f',1,'wxTimelineCtrl']]],
+  ['setduration_8',['SetDuration',['../classTimelineItemData.html#a689b198d39e820351726fcd9b9f390da',1,'TimelineItemData']]],
+  ['setendtime_9',['SetEndTime',['../classTimelineItemData.html#a6f8668b95c2cf971972ede8a3753eb33',1,'TimelineItemData']]],
+  ['seteventhandlers_10',['SetEventHandlers',['../classwxTimelineCtrl.html#a00d6a183ac0b264511d5cb4d9a79861e',1,'wxTimelineCtrl']]],
+  ['setfirstvisibletime_11',['SetFirstVisibleTime',['../classwxTimelineCtrl.html#a0fffabb1bfa0847048148be11acf0c9d',1,'wxTimelineCtrl']]],
+  ['setitemcolor_12',['setitemcolor',['../classwxTimelineCtrl.html#a874e621211541bc3b7c7f44529a1e499',1,'wxTimelineCtrl::SetItemColor(T *data, const wxColour &amp;colour)'],['../classwxTimelineCtrl.html#aa4d5c9b7dc1e393d55069f5625afcb06',1,'wxTimelineCtrl::SetItemColor(size_t index, const wxColour &amp;colour)']]],
+  ['setname_13',['setname',['../classSampleData.html#a32d456a09cfb527e6a00b8df3480c7fc',1,'SampleData::SetName()'],['../classTimelineItemData.html#a9a0ca665d3bf6b9d4f5281064d0a6436',1,'TimelineItemData::SetName(const wxString &amp;name)=0']]],
+  ['setstarttime_14',['setstarttime',['../classTimelineItemData.html#a4ca00058f4ed71a76b73eb1e0b1f94c4',1,'TimelineItemData::SetStartTime()'],['../classwxTimelineCtrl.html#acd99c3f6918102730a393d3ee5a723e3',1,'wxTimelineCtrl::SetStartTime(const wxDateTime &amp;val)']]],
+  ['settotalduration_15',['SetTotalDuration',['../classwxTimelineCtrl.html#a39176af21158480feb1e4b1fdd83ee50',1,'wxTimelineCtrl']]],
+  ['setvisibleduration_16',['SetVisibleDuration',['../classwxTimelineCtrl.html#a6f38cf8ea46debe77bd8e28c888dd5d1',1,'wxTimelineCtrl']]],
+  ['setvisibletimerange_17',['SetVisibleTimeRange',['../classwxTimelineCtrl.html#a7ca28c95ef1596d2f00c58f8459a77d7',1,'wxTimelineCtrl']]],
+  ['setzoomlevel_18',['SetZoomLevel',['../classwxTimelineCtrl.html#a72ba821f27ca6f30226a0dbf086adefd',1,'wxTimelineCtrl']]],
+  ['setzoompreset_19',['SetZoomPreset',['../classwxTimelineCtrl.html#a96b75869cc4ac6982be758fa1de302f2',1,'wxTimelineCtrl']]],
+  ['showalltimeline_20',['ShowAllTimeline',['../classwxTimelineCtrl.html#ae5b90a77ea3367df6423a7f150d57ab6',1,'wxTimelineCtrl']]],
+  ['showcontextmenu_21',['ShowContextMenu',['../classwxTimelineCtrl.html#ab9396e10e041fe154610fd9bbacb0c28',1,'wxTimelineCtrl']]],
+  ['showtooltips_22',['ShowToolTips',['../classwxTimelineCtrlTestMainFrame.html#ac4ab4e92a55d69c2dcf1cd97cbc9f367',1,'wxTimelineCtrlTestMainFrame']]],
+  ['swapitems_23',['SwapItems',['../classwxTimelineCtrl.html#a761587a996d3feef04de1d3a8b66e6d9',1,'wxTimelineCtrl']]]
+];

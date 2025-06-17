@@ -1,0 +1,9 @@
+<map id="wxTimelineCtrlTestMainFrame.h" name="wxTimelineCtrlTestMainFrame.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="89,5,321,31"/>
+<area shape="rect" id="Node000002" href="$wxTimelineCtrlApp_8h.html" title=" " alt="" coords="13,79,171,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="177,40,112,81,109,76,174,36"/>
+<area shape="rect" id="Node000004" href="$wxTimelineCtrlTestMainFrame_8cpp.html" title=" " alt="" coords="195,79,442,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="237,36,302,76,299,81,234,40"/>
+<area shape="rect" id="Node000003" href="$wxTimelineCtrlApp_8cpp.html" title=" " alt="" coords="5,152,179,177"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="95,118,95,152,89,152,89,118"/>
+</map>

@@ -1,0 +1,537 @@
+\doxysection{Timeline\+Art\+Provider.\+h}
+\hypertarget{TimelineArtProvider_8h_source}{}\label{TimelineArtProvider_8h_source}\mbox{\hyperlink{TimelineArtProvider_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ \_TIMELINEARTPROVIDER\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ \_TIMELINEARTPROVIDER\_H}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <wx/wx.h>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <wx/dcgraph.h>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{TimelineItem_8h}{TimelineItem.h}}"{}}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#if\ defined(\_\_LINUX\_\_)}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <wx/dc.h>}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }wxGraphicsGradientStops;}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classTimelineArtProvider}{TimelineArtProvider}}}
+\DoxyCodeLine{00015\ \{}
+\DoxyCodeLine{00016\ \ \ \ \ wxDECLARE\_NO\_COPY\_CLASS(\mbox{\hyperlink{classTimelineArtProvider}{TimelineArtProvider}});}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00019\ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_aee91cac646121a6c67529a3be0356691}{TimelineArtProvider}}()}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classTimelineArtProvider_afe2d2b223e00d40029a37efbac52d737}{m\_BackgroundColour}}(*wxWHITE),}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_ad518a5074c1a0dec30828bd0ad9df5c9}{m\_LimitTimeColour}}(*wxBLUE),}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}}(5),}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a2e13aa64c12ae7f1714678b2e1dca220}{m\_MinScaleStep}}(50.0)}
+\DoxyCodeLine{00024\ \ \ \ \ \{}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a7e13786b25e5dca5d0f8df9278e01af8}{m\_TimeScaleFont}}.Create(8,\ wxFONTFAMILY\_DEFAULT,\ wxFONTSTYLE\_NORMAL,\ wxFONTWEIGHT\_NORMAL,\ \textcolor{keyword}{false},\ \textcolor{stringliteral}{"{}Arial"{}});}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a131f38896ef594933a83666c8c0382df}{m\_ItemNameFont}}.Create(9,\ wxFONTFAMILY\_DEFAULT,\ wxFONTSTYLE\_NORMAL,\ wxFONTWEIGHT\_NORMAL,\ \textcolor{keyword}{false},\ \textcolor{stringliteral}{"{}Arial"{}});}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a71629d0e2eadbee618591b89c75d4b2f}{m\_PenTimelineMain}}\ =\ wxPen(wxColour(255,\ 255,\ 255,\ 90));}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a29d737dddf657dbfbde5eacede40d07e}{m\_PenScrollerMain}}\ =\ wxPen(wxColour(255,\ 255,\ 255,\ 120));}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a78e3f0893e53b0221eeef236f5bfed53}{m\_PenVisibleFrameNormal}}\ =\ wxPen(wxColour(255,\ 255,\ 255,\ 96));}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_ab9c18bde88a982b643792bad605b1f40}{m\_PenVisibleFrameHover}}\ =\ wxPen(wxColour(255,\ 255,\ 255,\ 128));}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a210b8eaf49e3ac2d37bd70736cd4a900}{m\_PenVisibleFramePressed}}\ =\ wxPen(wxColour(255,\ 255,\ 255,\ 160));}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a3ddb3915f43cc1b23989ec06899bd52a}{m\_PenGap}}\ =\ wxPen(*wxRED,\ 1,\ wxPENSTYLE\_SHORT\_DASH);}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_ab6c4e5bb40dab201155cb1c30bfbd6e2}{CreateRoundRegions}}();}
+\DoxyCodeLine{00035\ \ \ \ \ \}}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classTimelineArtProvider_a1d1cc74f02daef48bd6b543ab5193ae2}{\string~TimelineArtProvider}}()\ \{\}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_a77a82d6d773259f5281a87a4c227146d}{DrawBackground}}(wxDC\&\ dc,\ \textcolor{keyword}{const}\ wxRect\&\ rect)}
+\DoxyCodeLine{00039\ \ \ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ dc.GradientFillLinear(rect,\ wxColour(83,\ 83,\ 83),\ wxColour(163,\ 163,\ 163),\ wxDOWN);}
+\DoxyCodeLine{00041\ \ \ \ \ \}}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_a7498031de332416fc8a7ad2810663984}{DrawTimelineBackground}}(wxDC\&\ dc,\ \textcolor{keyword}{const}\ wxRect\&\ rect)\ \{\}}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_a1741a06a010f2935505b70a28bd7d065}{DrawTimelineTrack}}(wxDC\&\ dc,\ \textcolor{keyword}{const}\ wxRect\&\ rect)}
+\DoxyCodeLine{00044\ \ \ \ \ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ dc.SetPen(\mbox{\hyperlink{classTimelineArtProvider_a71629d0e2eadbee618591b89c75d4b2f}{m\_PenTimelineMain}});}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_aaabcbdc310eb725a6c5f05f4eeae43c3}{DrawGradientRoundedRect}}(dc,\ rect,\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}},\ wxGraphicsGradientStops(wxColour(55,\ 55,\ 55),\ wxColour(93,\ 93,\ 93)),\ wxDOWN);}
+\DoxyCodeLine{00047\ \ \ \ \ \}}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_a3ddd0a310c30f6cd7c16b8833db2f172}{DrawScrollerBackground}}(wxDC\&\ dc,\ \textcolor{keyword}{const}\ wxRect\&\ rect)\ \{\}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_a22186deb8d0867f454b3074717dbf7e2}{DrawScrollerTrack}}(wxDC\&\ dc,\ \textcolor{keyword}{const}\ wxRect\&\ rect)}
+\DoxyCodeLine{00050\ \ \ \ \ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ dc.SetPen(\mbox{\hyperlink{classTimelineArtProvider_a29d737dddf657dbfbde5eacede40d07e}{m\_PenScrollerMain}});}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_aaabcbdc310eb725a6c5f05f4eeae43c3}{DrawGradientRoundedRect}}(dc,\ rect,\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}},\ wxGraphicsGradientStops(wxColour(55,\ 55,\ 55),\ wxColour(93,\ 93,\ 93)),\ wxDOWN);}
+\DoxyCodeLine{00053\ \ \ \ \ \}}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_a2f0296c8475b044252711c1f5d7dffde}{DrawGap}}(wxDC\&\ dc,\ \textcolor{keyword}{const}\ wxRect\&\ rTimeline,\ \textcolor{keyword}{const}\ wxRect\&\ rVisibleFrame)\ \{\}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_ac0c02489cf585cf38e89ab07246ca6f8}{DrawLeftArrow}}(wxDC\&\ dc,\ \textcolor{keyword}{const}\ wxRect\&\ rect,\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025}{TimelineElementState}}\ state)}
+\DoxyCodeLine{00057\ \ \ \ \ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ wxPoint\ t\ =\ rect.GetTopRight();}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ wxPoint\ b\ =\ rect.GetBottomRight();}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ wxPoint\ c\ =\ rect.GetTopLeft();}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ c.y\ +=\ rect.height\ /\ 2;}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a4d88bcd2634f079a12ff215ca6d9e3d0}{DrawArrow}}(dc,\ t,\ b,\ c,\ state);}
+\DoxyCodeLine{00064\ \ \ \ \ \}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_a44c96fe926e0d0418cb8eff40f038354}{DrawRightArrow}}(wxDC\&\ dc,\ \textcolor{keyword}{const}\ wxRect\&\ rect,\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025}{TimelineElementState}}\ state)}
+\DoxyCodeLine{00066\ \ \ \ \ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ wxPoint\ t\ =\ rect.GetTopLeft();}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ wxPoint\ b\ =\ rect.GetBottomLeft();}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ wxPoint\ c\ =\ rect.GetTopRight();}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ c.y\ +=\ rect.height\ /\ 2;}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a4d88bcd2634f079a12ff215ca6d9e3d0}{DrawArrow}}(dc,\ t,\ b,\ c,\ state);}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_a6e9ef22f713c9fcda9078da06f408a5f}{DrawVisibleFrame}}(wxDC\&\ dc,\ \textcolor{keyword}{const}\ wxRect\&\ rect,\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025}{TimelineElementState}}\ state)}
+\DoxyCodeLine{00075\ \ \ \ \ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ koef\ =}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ state\ ==\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025a960b44c579bc2f6818d2daaf9e4c16f0}{TimelineElementState::Normal}}\ ?\ 0.3\ :}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ state\ ==\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025aeee0168be69b854c20621fc6f01cc3fc}{TimelineElementState::Hover}}\ ?\ 0.5\ :}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ 0.7;}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ desiredRadius\ =\ 11;\ }
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ maxPossibleRadiusForRect\ =\ (wxMin(rect.width,\ rect.height)\ -\/\ 2)\ /\ 2;}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ actualRadius\ =\ \mbox{\hyperlink{wxTimelineCtrl_8h_ab8a15ce84b30d6ee992a81301e8bb4b6}{wxClip}}(desiredRadius,\ 0,\ maxPossibleRadiusForRect);}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ dc.SetPen(wxColour(255,\ 255,\ 255,\ 255\ *\ (koef\ +\ 0.1)));}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ wxGraphicsGradientStops\ stops(wxColour(255,\ 255,\ 255,\ 192\ *\ koef),\ wxColour(255,\ 255,\ 255,\ 128\ *\ koef));}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ stops.Add(wxColour(255,\ 255,\ 255,\ 128\ *\ koef),\ 0.6f);}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ stops.Add(wxColour(255,\ 255,\ 255,\ 76\ *\ koef),\ 0.61f);}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_aaabcbdc310eb725a6c5f05f4eeae43c3}{DrawGradientRoundedRect}}(dc,\ rect,\ actualRadius,\ stops,\ wxDOWN);}
+\DoxyCodeLine{00092\ \ \ \ \ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_ac38da5e1b97899e793d0b276fe066daf}{DrawTimeScale}}(wxDC\&\ dc,\ \textcolor{keyword}{const}\ wxRect\&\ rect,}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ wxDateTime\&\ startTime,\ \textcolor{keyword}{const}\ wxDateTime\&\ endTime)}
+\DoxyCodeLine{00096\ \ \ \ \ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rect.width\ <=\ 0\ ||\ rect.height\ <=\ 0)}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ wxTimeSpan\ duration\ =\ endTime\ -\/\ startTime;}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{long}\ totalSeconds\ =\ duration.GetSeconds().ToLong();}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (totalSeconds\ <=\ 0)}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ dc.SetTextForeground(wxColour(80,\ 80,\ 80));}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ dc.SetFont(\mbox{\hyperlink{classTimelineArtProvider_a7e13786b25e5dca5d0f8df9278e01af8}{m\_TimeScaleFont}});}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ dc.SetPen(wxPen(wxColour(80,\ 80,\ 80),\ 1));}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ wxString\ sampleText\ =\ \textcolor{stringliteral}{"{}00:00:00"{}};}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ wxSize\ textSize\ =\ dc.GetTextExtent(sampleText);}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ textWidth\ =\ textSize.GetWidth();}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ textHeight\ =\ textSize.GetHeight();}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ minSpacing\ =\ textWidth\ +\ 20;}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ maxLabels\ =\ wxMax(2,\ rect.width\ /\ minSpacing);}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ interval\ =\ \mbox{\hyperlink{classTimelineArtProvider_a494f9d0a5ee09043c4772d8495ad6298}{CalculateNiceInterval}}(totalSeconds,\ maxLabels);}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ numMarks\ =\ (totalSeconds\ /\ interval)\ +\ 1;}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <=\ numMarks\ \&\&\ i\ *\ interval\ <=\ totalSeconds;\ ++i)}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{long}\ offsetSeconds\ =\ i\ *\ interval;}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (offsetSeconds\ >\ totalSeconds)}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ offsetSeconds\ =\ totalSeconds;}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ progress\ =\ double(offsetSeconds)\ /\ double(totalSeconds);}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ x\ =\ rect.x\ +\ int(progress\ *\ rect.width);}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ wxDateTime\ markTime\ =\ startTime\ +\ wxTimeSpan::Seconds(offsetSeconds);}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ wxString\ timeText\ =\ \mbox{\hyperlink{classTimelineArtProvider_a789362c54206c354ff2b6ca901c51f2f}{FormatTimeForScale}}(markTime);}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tickHeight\ =\ 6;}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tickX\ =\ x;}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ dc.DrawLine(tickX,\ rect.y,\ tickX,\ rect.y\ +\ tickHeight);}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ wxSize\ currentTextSize\ =\ dc.GetTextExtent(timeText);}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ textX,\ textY;}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i\ ==\ 0)}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textX\ =\ x\ +\ 2;}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (offsetSeconds\ >=\ totalSeconds)}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textX\ =\ x\ -\/\ currentTextSize.GetWidth()\ -\/\ 2;}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textX\ =\ x\ -\/\ currentTextSize.GetWidth()\ /\ 2;}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ textY\ =\ rect.y\ +\ (rect.height\ -\/\ textHeight)\ /\ 2;}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ textX\ =\ wxMax(rect.x,\ wxMin(textX,\ rect.GetRight()\ -\/\ currentTextSize.GetWidth()));}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ dc.SetClippingRegion(rect);}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ dc.DrawText(timeText,\ textX,\ textY);}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ dc.DestroyClippingRegion();}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00163\ \ \ \ \ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classTimelineArtProvider_a494f9d0a5ee09043c4772d8495ad6298}{CalculateNiceInterval}}(\textcolor{keywordtype}{long}\ totalSeconds,\ \textcolor{keywordtype}{int}\ maxLabels)}
+\DoxyCodeLine{00166\ \ \ \ \ \{}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (maxLabels\ <=\ 1)}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ totalSeconds;}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ roughInterval\ =\ double(totalSeconds)\ /\ double(maxLabels\ -\/\ 1);}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ niceIntervals[]\ =\ \{}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ 1,\ 2,\ 5,\ 10,\ 15,\ 30,}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ 60,\ 120,\ 300,\ 600,\ 900,\ 1800,}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ 3600,\ 7200,\ 10800,\ 21600,\ 43200,}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ 86400,\ 172800,\ 432000,\ 864000,\ 2592000}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ numIntervals\ =\ \textcolor{keyword}{sizeof}(niceIntervals)\ /\ \textcolor{keyword}{sizeof}(niceIntervals[0]);}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ numIntervals;\ ++i)}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (niceIntervals[i]\ >=\ roughInterval)}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ niceIntervals[i];}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ largestNice\ =\ niceIntervals[numIntervals\ -\/\ 1];}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ multiplier\ =\ (int(roughInterval)\ +\ largestNice\ -\/\ 1)\ /\ largestNice;}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ largestNice\ *\ multiplier;}
+\DoxyCodeLine{00191\ \ \ \ \ \}}
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00193\ \ \ \ \ wxString\ \mbox{\hyperlink{classTimelineArtProvider_a789362c54206c354ff2b6ca901c51f2f}{FormatTimeForScale}}(\textcolor{keyword}{const}\ wxDateTime\&\ time)}
+\DoxyCodeLine{00194\ \ \ \ \ \{}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ time.Format(\textcolor{stringliteral}{"{}\%H:\%M:\%S"{}});}
+\DoxyCodeLine{00196\ \ \ \ \ \}}
+\DoxyCodeLine{00197\ }
+\DoxyCodeLine{00198\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00199\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_ac104d930508fc533f4cac88054c26de0}{DrawItem}}(wxDC\&\ dc,\ \textcolor{keyword}{const}\ wxRect\&\ rect,\ \textcolor{keyword}{const}\ wxRect\&\ parentRect,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classTimelineItem}{TimelineItem<T>}}\&\ item,\ \textcolor{keywordtype}{bool}\ isScrollerContext\ =\ \textcolor{keyword}{false},\ \textcolor{keywordtype}{bool}\ makeTransparentDueToOverlap\ =\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00201\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_a899ef0eee0875031470b56fd8ab88c91}{SetBackgroundColour}}(\textcolor{keyword}{const}\ wxColour\&\ colour)\ \{\ \mbox{\hyperlink{classTimelineArtProvider_afe2d2b223e00d40029a37efbac52d737}{m\_BackgroundColour}}\ =\ colour;\ \}}
+\DoxyCodeLine{00202\ \ \ \ \ wxColour\ \mbox{\hyperlink{classTimelineArtProvider_ae0a71f951604280f2ac8e68d6b91a291}{GetBackgroundColour}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classTimelineArtProvider_afe2d2b223e00d40029a37efbac52d737}{m\_BackgroundColour}};\ \}}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00205\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_ab6c4e5bb40dab201155cb1c30bfbd6e2}{CreateRoundRegions}}()}
+\DoxyCodeLine{00206\ \ \ \ \ \{}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_af1a1ba44c16ea6ca8a31b12f5e67bd21}{m\_BmpRound}}\ =\ wxBitmap(\mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}}\ *\ 2,\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}}\ *\ 2,\ 1);}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ wxMemoryDC\ dc(\mbox{\hyperlink{classTimelineArtProvider_af1a1ba44c16ea6ca8a31b12f5e67bd21}{m\_BmpRound}});}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ dc.SetBackground(*wxWHITE\_BRUSH);}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ dc.Clear();}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ dc.SetPen(*wxBLACK\_PEN);}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ dc.SetBrush(*wxBLACK\_BRUSH);}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ dc.DrawRoundedRectangle(0,\ 0,\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}}\ *\ 2,\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}}\ *\ 2,\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}});}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a50e3d6139d629897c3adf181c2087100}{m\_RoundRegionTL}}\ =\ \mbox{\hyperlink{classTimelineArtProvider_a13f67dad9d63abcde6f9e0a99a206948}{m\_RoundRegionTR}}\ =\ \mbox{\hyperlink{classTimelineArtProvider_a4e7d9681f4e7ad16e6ce7bb485b7c6d8}{m\_RoundRegionBL}}\ =\ \mbox{\hyperlink{classTimelineArtProvider_a4dd2b0c6e0e03b6b03df6127cd803e32}{m\_RoundRegionBR}}\ =\ wxRegion(\mbox{\hyperlink{classTimelineArtProvider_af1a1ba44c16ea6ca8a31b12f5e67bd21}{m\_BmpRound}},\ *wxBLACK,\ 0);}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a13f67dad9d63abcde6f9e0a99a206948}{m\_RoundRegionTR}}.Offset(-\/\mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}},\ 0);}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a4e7d9681f4e7ad16e6ce7bb485b7c6d8}{m\_RoundRegionBL}}.Offset(0,\ -\/\mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}});}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a4dd2b0c6e0e03b6b03df6127cd803e32}{m\_RoundRegionBR}}.Offset(-\/\mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}},\ -\/\mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}});}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a50e3d6139d629897c3adf181c2087100}{m\_RoundRegionTL}}.Intersect(0,\ 0,\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}},\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}});}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a13f67dad9d63abcde6f9e0a99a206948}{m\_RoundRegionTR}}.Intersect(0,\ 0,\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}},\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}});}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a4e7d9681f4e7ad16e6ce7bb485b7c6d8}{m\_RoundRegionBL}}.Intersect(0,\ 0,\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}},\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}});}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider_a4dd2b0c6e0e03b6b03df6127cd803e32}{m\_RoundRegionBR}}.Intersect(0,\ 0,\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}},\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}});}
+\DoxyCodeLine{00224\ \ \ \ \ \}}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \ \ \ \ wxRegion\ \mbox{\hyperlink{classTimelineArtProvider_af4d9c37f5f84d15a2340148f5575d1c0}{GetRoundRegion}}(\textcolor{keyword}{const}\ wxRect\&\ rect)}
+\DoxyCodeLine{00227\ \ \ \ \ \{}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ wxRegion\ region(rect);}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ wxRegion\ round;}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ round\ =\ \mbox{\hyperlink{classTimelineArtProvider_a50e3d6139d629897c3adf181c2087100}{m\_RoundRegionTL}};}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ round.Offset(rect.x,\ rect.y);}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ region.Subtract(round);}
+\DoxyCodeLine{00233\ }
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ round\ =\ \mbox{\hyperlink{classTimelineArtProvider_a4e7d9681f4e7ad16e6ce7bb485b7c6d8}{m\_RoundRegionBL}};}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ round.Offset(rect.x,\ rect.y\ +\ rect.height\ -\/\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}});}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ region.Subtract(round);}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ round\ =\ \mbox{\hyperlink{classTimelineArtProvider_a13f67dad9d63abcde6f9e0a99a206948}{m\_RoundRegionTR}};}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ round.Offset(rect.x\ +\ rect.width\ -\/\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}},\ rect.y);}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ region.Subtract(round);}
+\DoxyCodeLine{00241\ }
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ round\ =\ \mbox{\hyperlink{classTimelineArtProvider_a4dd2b0c6e0e03b6b03df6127cd803e32}{m\_RoundRegionBR}};}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ round.Offset(rect.x\ +\ rect.width\ -\/\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}},\ rect.y\ +\ rect.height\ -\/\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}});}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ region.Subtract(round);}
+\DoxyCodeLine{00245\ }
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ region;}
+\DoxyCodeLine{00247\ \ \ \ \ \}}
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00249\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_aaabcbdc310eb725a6c5f05f4eeae43c3}{DrawGradientRoundedRect}}(wxDC\&\ dc,\ \textcolor{keyword}{const}\ wxRect\&\ rect,\ \textcolor{keywordtype}{double}\ radius,\ \textcolor{keyword}{const}\ wxGraphicsGradientStops\&\ stops,\ wxDirection\ direction\ =\ wxEAST)}
+\DoxyCodeLine{00250\ \ \ \ \ \{}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ wxGCDC*\ gdc\ =\ wxDynamicCast(\&dc,\ wxGCDC);}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!gdc)}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ dc.SetDeviceClippingRegion(\mbox{\hyperlink{classTimelineArtProvider_af4d9c37f5f84d15a2340148f5575d1c0}{GetRoundRegion}}(rect));}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ dc.GradientFillLinear(rect,\ stops.GetStartColour(),\ stops.GetEndColour(),\ direction);}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ dc.SetBrush(*wxTRANSPARENT\_BRUSH);}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ dc.DrawRoundedRectangle(rect,\ radius);}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ dc.DestroyClippingRegion();}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00261\ }
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w\ =\ rect.width;}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ h\ =\ rect.height;}
+\DoxyCodeLine{00264\ }
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (w\ ==\ 0\ ||\ h\ ==\ 0)}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00267\ }
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (radius\ <\ 0.0)}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ radius\ =\ -\/radius\ *\ ((w\ <\ h)\ ?\ w\ :\ h);}
+\DoxyCodeLine{00270\ }
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ wxPoint\ start;}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ wxPoint\ end;}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (direction)}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ wxWEST:}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ start\ =\ rect.GetRightBottom();}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ start.x++;}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ end\ =\ rect.GetLeftBottom();}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ wxEAST:}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ start\ =\ rect.GetLeftBottom();}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ end\ =\ rect.GetRightBottom();}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ end.x++;}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ wxNORTH:}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ start\ =\ rect.GetLeftBottom();}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ start.y++;}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ end\ =\ rect.GetLeftTop();}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ wxSOUTH:}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ start\ =\ rect.GetLeftTop();}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ end\ =\ rect.GetLeftBottom();}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ end.y++;}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00298\ }
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ wxGraphicsContext*\ gc\ =\ gdc-\/>GetGraphicsContext();}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (gc-\/>ShouldOffset())}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ w\ -\/=\ 1;}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ h\ -\/=\ 1;}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ gc-\/>SetBrush(gc-\/>CreateLinearGradientBrush(start.x,\ start.y,\ end.x,\ end.y,\ stops));}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ gc-\/>DrawRoundedRectangle(rect.x,\ rect.y,\ w,\ h,\ radius);}
+\DoxyCodeLine{00309\ \ \ \ \ \}}
+\DoxyCodeLine{00310\ }
+\DoxyCodeLine{00311\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_a4d88bcd2634f079a12ff215ca6d9e3d0}{DrawArrow}}(wxDC\&\ dc,\ wxPoint\&\ top,\ wxPoint\&\ bottom,\ wxPoint\&\ center,\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025}{TimelineElementState}}\ state)}
+\DoxyCodeLine{00312\ \ \ \ \ \{}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ wxColour\ penColor,\ brushColor,\ shadowColor;}
+\DoxyCodeLine{00314\ }
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (state)}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025a960b44c579bc2f6818d2daaf9e4c16f0}{TimelineElementState::Normal}}:}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ penColor\ =\ wxColour(60,\ 60,\ 60);}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ brushColor\ =\ wxColour(180,\ 180,\ 180,\ 220);}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ shadowColor\ =\ wxColour(0,\ 0,\ 0,\ 80);}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025aeee0168be69b854c20621fc6f01cc3fc}{TimelineElementState::Hover}}:}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ penColor\ =\ wxColour(40,\ 40,\ 40);}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ brushColor\ =\ wxColour(240,\ 240,\ 240,\ 240);}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ shadowColor\ =\ wxColour(0,\ 0,\ 0,\ 120);}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025ad78a68f6a85421ae121c2cb5b73a1040}{TimelineElementState::Pressed}}:}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ penColor\ =\ wxColour(20,\ 20,\ 20);}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ brushColor\ =\ wxColour(255,\ 255,\ 255,\ 255);}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ shadowColor\ =\ wxColour(0,\ 0,\ 0,\ 150);}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025ab9f5c797ebbf55adccdd8539a65a0241}{TimelineElementState::Disabled}}:}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ penColor\ =\ wxColour(120,\ 120,\ 120);}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ brushColor\ =\ wxColour(160,\ 160,\ 160,\ 160);}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ shadowColor\ =\ wxColour(0,\ 0,\ 0,\ 40);}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ penColor\ =\ wxColour(60,\ 60,\ 60);}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ brushColor\ =\ wxColour(180,\ 180,\ 180,\ 220);}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ shadowColor\ =\ wxColour(0,\ 0,\ 0,\ 80);}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00343\ }
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ wxPoint\ expandedTop\ =\ top;}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ wxPoint\ expandedBottom\ =\ bottom;}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ wxPoint\ expandedCenter\ =\ center;}
+\DoxyCodeLine{00347\ }
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ deltaY\ =\ (bottom.y\ -\/\ top.y)\ /\ 6;}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ expandedTop.y\ -\/=\ deltaY;}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ expandedBottom.y\ +=\ deltaY;}
+\DoxyCodeLine{00351\ }
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ deltaX\ =\ abs(center.x\ -\/\ top.x)\ /\ 4;}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (center.x\ >\ top.x)}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ expandedCenter.x\ +=\ deltaX;}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ expandedCenter.x\ -\/=\ deltaX;}
+\DoxyCodeLine{00357\ }
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ wxPoint\ arrowPoints[]\ =\ \{\ expandedTop,\ expandedCenter,\ expandedBottom\ \};}
+\DoxyCodeLine{00359\ }
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (state\ !=\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025ab9f5c797ebbf55adccdd8539a65a0241}{TimelineElementState::Disabled}})}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ wxPoint\ shadowPoints[]\ =\ \{}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ wxPoint(expandedTop.x\ +\ 1,\ expandedTop.y\ +\ 1),}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ wxPoint(expandedCenter.x\ +\ 1,\ expandedCenter.y\ +\ 1),}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ wxPoint(expandedBottom.x\ +\ 1,\ expandedBottom.y\ +\ 1)}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00367\ }
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ dc.SetBrush(wxBrush(shadowColor));}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ dc.SetPen(wxPen(shadowColor));}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ dc.DrawPolygon(WXSIZEOF(shadowPoints),\ shadowPoints);}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00372\ }
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ dc.SetBrush(wxBrush(brushColor));}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ dc.SetPen(wxPen(brushColor));}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ dc.DrawPolygon(WXSIZEOF(arrowPoints),\ arrowPoints);}
+\DoxyCodeLine{00376\ }
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ dc.SetPen(wxPen(penColor,\ state\ ==\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025ad78a68f6a85421ae121c2cb5b73a1040}{TimelineElementState::Pressed}}\ ?\ 2\ :\ 1));}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ dc.DrawLines(WXSIZEOF(arrowPoints),\ arrowPoints);}
+\DoxyCodeLine{00379\ }
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (state\ ==\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025aeee0168be69b854c20621fc6f01cc3fc}{TimelineElementState::Hover}}\ ||\ state\ ==\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025ad78a68f6a85421ae121c2cb5b73a1040}{TimelineElementState::Pressed}})}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ wxColour\ highlightColor\ =\ wxColour(255,\ 255,\ 255,\ 100);}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ dc.SetPen(wxPen(highlightColor,\ 1));}
+\DoxyCodeLine{00384\ }
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (center.x\ >\ top.x)}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dc.DrawLine(expandedTop.x\ -\/\ 1,\ expandedTop.y\ +\ 1,}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ expandedCenter.x\ -\/\ 1,\ expandedCenter.y);}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dc.DrawLine(expandedTop.x\ +\ 1,\ expandedTop.y\ +\ 1,}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ expandedCenter.x\ +\ 1,\ expandedCenter.y);}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00396\ \ \ \ \ \}}
+\DoxyCodeLine{00397\ }
+\DoxyCodeLine{00398\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00399\ \ \ \ \ wxColour\ \mbox{\hyperlink{classTimelineArtProvider_afe2d2b223e00d40029a37efbac52d737}{m\_BackgroundColour}};}
+\DoxyCodeLine{00400\ \ \ \ \ wxColour\ \mbox{\hyperlink{classTimelineArtProvider_ad518a5074c1a0dec30828bd0ad9df5c9}{m\_LimitTimeColour}};}
+\DoxyCodeLine{00401\ }
+\DoxyCodeLine{00402\ \ \ \ \ wxFont\ \mbox{\hyperlink{classTimelineArtProvider_a7e13786b25e5dca5d0f8df9278e01af8}{m\_TimeScaleFont}};}
+\DoxyCodeLine{00403\ \ \ \ \ wxFont\ \mbox{\hyperlink{classTimelineArtProvider_a131f38896ef594933a83666c8c0382df}{m\_ItemNameFont}};}
+\DoxyCodeLine{00404\ }
+\DoxyCodeLine{00405\ \ \ \ \ wxPen\ \mbox{\hyperlink{classTimelineArtProvider_a71629d0e2eadbee618591b89c75d4b2f}{m\_PenTimelineMain}};}
+\DoxyCodeLine{00406\ \ \ \ \ wxPen\ \mbox{\hyperlink{classTimelineArtProvider_a29d737dddf657dbfbde5eacede40d07e}{m\_PenScrollerMain}};}
+\DoxyCodeLine{00407\ \ \ \ \ wxPen\ \mbox{\hyperlink{classTimelineArtProvider_a78e3f0893e53b0221eeef236f5bfed53}{m\_PenVisibleFrameNormal}};}
+\DoxyCodeLine{00408\ \ \ \ \ wxPen\ \mbox{\hyperlink{classTimelineArtProvider_ab9c18bde88a982b643792bad605b1f40}{m\_PenVisibleFrameHover}};}
+\DoxyCodeLine{00409\ \ \ \ \ wxPen\ \mbox{\hyperlink{classTimelineArtProvider_a210b8eaf49e3ac2d37bd70736cd4a900}{m\_PenVisibleFramePressed}};}
+\DoxyCodeLine{00410\ \ \ \ \ wxPen\ \mbox{\hyperlink{classTimelineArtProvider_a3ddb3915f43cc1b23989ec06899bd52a}{m\_PenGap}};}
+\DoxyCodeLine{00411\ }
+\DoxyCodeLine{00412\ \ \ \ \ wxBitmap\ \mbox{\hyperlink{classTimelineArtProvider_af1a1ba44c16ea6ca8a31b12f5e67bd21}{m\_BmpRound}};}
+\DoxyCodeLine{00413\ \ \ \ \ wxRegion\ \mbox{\hyperlink{classTimelineArtProvider_a50e3d6139d629897c3adf181c2087100}{m\_RoundRegionTL}},\ \mbox{\hyperlink{classTimelineArtProvider_a13f67dad9d63abcde6f9e0a99a206948}{m\_RoundRegionTR}},\ \mbox{\hyperlink{classTimelineArtProvider_a4e7d9681f4e7ad16e6ce7bb485b7c6d8}{m\_RoundRegionBL}},\ \mbox{\hyperlink{classTimelineArtProvider_a4dd2b0c6e0e03b6b03df6127cd803e32}{m\_RoundRegionBR}};}
+\DoxyCodeLine{00414\ }
+\DoxyCodeLine{00415\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}};}
+\DoxyCodeLine{00416\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classTimelineArtProvider_a2e13aa64c12ae7f1714678b2e1dca220}{m\_MinScaleStep}};}
+\DoxyCodeLine{00417\ \};}
+\DoxyCodeLine{00418\ }
+\DoxyCodeLine{00419\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00420\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classTimelineArtProvider_ac104d930508fc533f4cac88054c26de0}{TimelineArtProvider::DrawItem}}(wxDC\&\ dc,\ \textcolor{keyword}{const}\ wxRect\&\ rect,\ \textcolor{keyword}{const}\ wxRect\&\ parentRect,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classTimelineItem}{TimelineItem<T>}}\&\ item,\ \textcolor{keywordtype}{bool}\ isScrollerContext,\ \textcolor{keywordtype}{bool}\ makeTransparentDueToOverlap)}
+\DoxyCodeLine{00421\ \{}
+\DoxyCodeLine{00422\ \ \ \ \ \textcolor{keywordflow}{if}\ (!item.\mbox{\hyperlink{classTimelineItem_a3c9a009b5ea9507582e476ced7b121d0}{Data}})}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00424\ }
+\DoxyCodeLine{00425\ \ \ \ \ wxRect\ r(rect.Intersect(parentRect));}
+\DoxyCodeLine{00426\ \ \ \ \ \textcolor{keywordflow}{if}\ (r.IsEmpty())}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00428\ }
+\DoxyCodeLine{00429\ \ \ \ \ wxColour\ currentItemColor\ =\ item.\mbox{\hyperlink{classTimelineItem_a1219cb20f524fcf2a231f7fc547cd51b}{Colour}};\ }
+\DoxyCodeLine{00430\ }
+\DoxyCodeLine{00431\ \ \ \ \ \textcolor{keywordflow}{switch}\ (item.\mbox{\hyperlink{classTimelineItem_a9c9149b189d168f048f33f93ee4fb330}{State}})}
+\DoxyCodeLine{00432\ \ \ \ \ \{}
+\DoxyCodeLine{00433\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025aeee0168be69b854c20621fc6f01cc3fc}{TimelineElementState::Hover}}:}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ currentItemColor\ =\ currentItemColor.ChangeLightness(130);}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00436\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025ad78a68f6a85421ae121c2cb5b73a1040}{TimelineElementState::Pressed}}:}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ currentItemColor\ =\ currentItemColor.ChangeLightness(150);}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00439\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025ab9f5c797ebbf55adccdd8539a65a0241}{TimelineElementState::Disabled}}:}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ currentItemColor\ =\ currentItemColor.ChangeLightness(90);}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00442\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00444\ \ \ \ \ \}}
+\DoxyCodeLine{00445\ }
+\DoxyCodeLine{00446\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\ finalAlpha\ =\ currentItemColor.Alpha();\ }
+\DoxyCodeLine{00447\ \ \ \ \ \textcolor{keywordflow}{if}\ (makeTransparentDueToOverlap)}
+\DoxyCodeLine{00448\ \ \ \ \ \{}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (isScrollerContext)}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ finalAlpha\ =\ 100;\ }
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \ \ \ \ finalAlpha\ =\ 180;}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00457\ \ \ \ \ \}}
+\DoxyCodeLine{00458\ \ \ \ \ }
+\DoxyCodeLine{00459\ \ \ \ \ wxColour\ baseColor(currentItemColor.Red(),\ currentItemColor.Green(),\ currentItemColor.Blue(),\ finalAlpha);}
+\DoxyCodeLine{00460\ \ \ \ \ }
+\DoxyCodeLine{00461\ \ \ \ \ wxColour\ gradColor\ =\ baseColor.ChangeLightness(133);\ }
+\DoxyCodeLine{00462\ \ \ \ \ gradColor.Set(gradColor.Red(),\ gradColor.Green(),\ gradColor.Blue(),\ finalAlpha);}
+\DoxyCodeLine{00463\ }
+\DoxyCodeLine{00464\ \ \ \ \ \textcolor{keywordtype}{int}\ radius\ =\ \mbox{\hyperlink{wxTimelineCtrl_8h_ab8a15ce84b30d6ee992a81301e8bb4b6}{wxClip}}(\mbox{\hyperlink{classTimelineArtProvider_a8ea082499669cda68c2ba2badb353227}{m\_Radius}},\ 0,\ (r.width\ -\/\ 2)\ /\ 2);}
+\DoxyCodeLine{00465\ }
+\DoxyCodeLine{00466\ \ \ \ \ wxGCDC*\ gdc\ =\ wxDynamicCast(\&dc,\ wxGCDC);}
+\DoxyCodeLine{00467\ \ \ \ \ \textcolor{keywordflow}{if}\ (gdc)}
+\DoxyCodeLine{00468\ \ \ \ \ \{}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ wxGraphicsContext*\ gc\ =\ gdc-\/>GetGraphicsContext();}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (gc)}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \ \ \ \ wxGraphicsGradientStops\ stops(baseColor,\ gradColor);}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \ \ \ \ wxGraphicsBrush\ brush\ =\ gc-\/>CreateLinearGradientBrush(}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r.x,\ r.GetBottom(),\ r.GetRight(),\ r.GetBottom(),\ stops);}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \ \ \ \ gc-\/>SetBrush(brush);}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ gc-\/>DrawRoundedRectangle(r.x,\ r.y,\ r.width,\ r.height,\ radius);}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00478\ \ \ \ \ \}}
+\DoxyCodeLine{00479\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00480\ \ \ \ \ \{}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ dc.SetDeviceClippingRegion(\mbox{\hyperlink{classTimelineArtProvider_af4d9c37f5f84d15a2340148f5575d1c0}{GetRoundRegion}}(r));}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ dc.GradientFillLinear(r,\ gradColor,\ baseColor,\ wxDOWN);}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ dc.SetBrush(*wxTRANSPARENT\_BRUSH);}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ dc.DrawRoundedRectangle(r,\ radius);}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ dc.DestroyClippingRegion();}
+\DoxyCodeLine{00486\ \ \ \ \ \}}
+\DoxyCodeLine{00487\ }
+\DoxyCodeLine{00488\ \ \ \ \ wxString\ name\ =\ item.\mbox{\hyperlink{classTimelineItem_a13405a832f3d4503da0a77f3788cf8b2}{GetItemName}}();}
+\DoxyCodeLine{00489\ \ \ \ \ \textcolor{keywordflow}{if}\ (!name.IsEmpty())}
+\DoxyCodeLine{00490\ \ \ \ \ \{}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ wxRect\ textRect\ =\ r;}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ textRect.Deflate(isScrollerContext\ ?\ 2\ :\ 5,\ 0);\ }
+\DoxyCodeLine{00493\ }
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ wxFont\ fontToUse\ =\ \mbox{\hyperlink{classTimelineArtProvider_a131f38896ef594933a83666c8c0382df}{m\_ItemNameFont}};}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (isScrollerContext)}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \ \ \ \ fontToUse\ =\ wxFont(wxFontInfo(9).Family(wxFONTFAMILY\_SWISS).Weight(wxFONTWEIGHT\_NORMAL));}
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \ \ \ \ fontToUse\ =\ wxFont(wxFontInfo(12)}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .Family(\mbox{\hyperlink{classTimelineArtProvider_a131f38896ef594933a83666c8c0382df}{m\_ItemNameFont}}.GetFamily())}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .Weight(\mbox{\hyperlink{classTimelineArtProvider_a131f38896ef594933a83666c8c0382df}{m\_ItemNameFont}}.GetWeight())}
+\DoxyCodeLine{00504\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .Style(\mbox{\hyperlink{classTimelineArtProvider_a131f38896ef594933a83666c8c0382df}{m\_ItemNameFont}}.GetStyle())}
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .Underlined(\mbox{\hyperlink{classTimelineArtProvider_a131f38896ef594933a83666c8c0382df}{m\_ItemNameFont}}.GetUnderlined())}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .FaceName(\mbox{\hyperlink{classTimelineArtProvider_a131f38896ef594933a83666c8c0382df}{m\_ItemNameFont}}.GetFaceName()));}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ dc.SetFont(fontToUse);}
+\DoxyCodeLine{00509\ }
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ dc.SetTextForeground(*wxBLACK);\ }
+\DoxyCodeLine{00511\ }
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ wxSize\ textSize\ =\ dc.GetTextExtent(name);}
+\DoxyCodeLine{00513\ }
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ canDrawText\ =\ (textRect.width\ >=\ textSize.x\ \&\&\ textRect.height\ >=\ textSize.y);}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (isScrollerContext\ \&\&\ r.width\ <\ 10)\ }
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \ \ \ \ canDrawText\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (canDrawText)}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00522\ \ \ \ \ \ \ \ \ \ \ \ \ textRect\ =\ textRect.Intersect(r);}
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!textRect.IsEmpty())}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ wxDCClipper\ clip(dc,\ textRect);}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dc.DrawLabel(name,\ textRect,\ wxALIGN\_LEFT\ |\ wxALIGN\_CENTER\_VERTICAL);}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00529\ \ \ \ \ \}}
+\DoxyCodeLine{00530\ \}}
+\DoxyCodeLine{00531\ }
+\DoxyCodeLine{00532\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ \_TIMELINEARTPROVIDER\_H}}
+
+\end{DoxyCode}

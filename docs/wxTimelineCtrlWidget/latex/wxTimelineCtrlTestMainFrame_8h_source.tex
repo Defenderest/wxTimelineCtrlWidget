@@ -1,0 +1,77 @@
+\doxysection{wx\+Timeline\+Ctrl\+Test\+Main\+Frame.\+h}
+\hypertarget{wxTimelineCtrlTestMainFrame_8h_source}{}\label{wxTimelineCtrlTestMainFrame_8h_source}\mbox{\hyperlink{wxTimelineCtrlTestMainFrame_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ Name:\ \ \ \ \ \ \ \ wxTimelineCtrlTestMainFrame.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//\ Purpose:\ \ \ \ \ }}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Author:\ \ \ \ \ \ Volodymyr\ (T-\/Rex)\ Triapichko}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Modified\ by:\ }}
+\DoxyCodeLine{00006\ \textcolor{comment}{//\ Created:\ \ \ \ \ 27/04/2025\ 18:45:30}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ RCS-\/ID:\ \ \ \ \ \ }}
+\DoxyCodeLine{00008\ \textcolor{comment}{//\ Copyright:\ \ \ Volodymyr\ (T-\/Rex)\ Triapichko,\ 2025}}
+\DoxyCodeLine{00009\ \textcolor{comment}{//\ Licence:\ \ \ \ \ }}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#ifndef\ \_WXTIMELINECTRLTESTMAINFRAME\_H\_}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#define\ \_WXTIMELINECTRLTESTMAINFRAME\_H\_}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ "{}wx/frame.h"{}}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ "{}wx/statusbr.h"{}}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{wxTimelineCtrl_8h}{wxTimelineCtrl.h}}"{}}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{SampleData_8h}{SampleData.h}}"{}}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#define\ ID\_WXTIMELINECTRLTESTMAINFRAME\ 10000}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#define\ ID\_PANEL\ 10003}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#define\ ID\_TIMELINE\_CTRL\ 10004}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#define\ ID\_STATUSBAR\ 10001}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#define\ SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_STYLE\ wxCAPTION|wxRESIZE\_BORDER|wxSYSTEM\_MENU|wxMINIMIZE\_BOX|wxMAXIMIZE\_BOX|wxCLOSE\_BOX}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#define\ SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_TITLE\ \_("{}wxTimelineCtrl\ Test\ Main\ Frame"{})}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#define\ SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_IDNAME\ ID\_WXTIMELINECTRLTESTMAINFRAME}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#define\ SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_SIZE\ wxSize(800,\ 500)}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#define\ SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_POSITION\ wxDefaultPosition}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00047\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classwxTimelineCtrlTestMainFrame}{wxTimelineCtrlTestMainFrame}}\ :\ \textcolor{keyword}{public}\ wxFrame}
+\DoxyCodeLine{00048\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \mbox{\hyperlink{classFloatingItemPopupWindow}{DECLARE\_CLASS}}(\mbox{\hyperlink{classwxTimelineCtrlTestMainFrame}{wxTimelineCtrlTestMainFrame}})}
+\DoxyCodeLine{00050\ \ \ \ \ \mbox{\hyperlink{classFloatingItemPopupWindow}{DECLARE\_EVENT\_TABLE}}()}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00054\ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_ab8e6f53412498af1e3f572a5cfea91df}{wxTimelineCtrlTestMainFrame}}();}
+\DoxyCodeLine{00055\ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_ab8e6f53412498af1e3f572a5cfea91df}{wxTimelineCtrlTestMainFrame}}(\mbox{\hyperlink{classFloatingItemPopupWindow}{wxWindow}}*\ \mbox{\hyperlink{classFloatingItemPopupWindow}{parent}},\ \mbox{\hyperlink{classFloatingItemPopupWindow}{wxWindowID}}\ \textcolor{keywordtype}{id}\ =\ \mbox{\hyperlink{wxTimelineCtrlTestMainFrame_8h_a43d95172ed9b5845cc722d55aa3868ee}{SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_IDNAME}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classFloatingItemPopupWindow}{wxString}}\&\ \mbox{\hyperlink{classFloatingItemPopupWindow}{caption}}\ =\ \mbox{\hyperlink{wxTimelineCtrlTestMainFrame_8h_a11737227da4092197b5589290fe22c72}{SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_TITLE}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classFloatingItemPopupWindow}{wxPoint}}\&\ \mbox{\hyperlink{classFloatingItemPopupWindow}{pos}}\ =\ \mbox{\hyperlink{wxTimelineCtrlTestMainFrame_8h_a9939b1d364c564e597c3a05ea388d512}{SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_POSITION}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classFloatingItemPopupWindow}{wxSize}}\&\ \mbox{\hyperlink{classFloatingItemPopupWindow}{size}}\ =\ \mbox{\hyperlink{wxTimelineCtrlTestMainFrame_8h_a377a4b2fb0b83d87447b4f63851dc9f0}{SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_SIZE}},\ \textcolor{keywordtype}{long}\ \mbox{\hyperlink{classFloatingItemPopupWindow}{style}}\ =\ \mbox{\hyperlink{wxTimelineCtrlTestMainFrame_8h_a1e895f1d909e1ca97a12c35bc28fae82}{SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_STYLE}});}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_a38accfda79b80b462bb74e337cae7f39}{Create}}(\mbox{\hyperlink{classFloatingItemPopupWindow}{wxWindow}}*\ \mbox{\hyperlink{classFloatingItemPopupWindow}{parent}},\ \mbox{\hyperlink{classFloatingItemPopupWindow}{wxWindowID}}\ \textcolor{keywordtype}{id}\ =\ \mbox{\hyperlink{wxTimelineCtrlTestMainFrame_8h_a43d95172ed9b5845cc722d55aa3868ee}{SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_IDNAME}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classFloatingItemPopupWindow}{wxString}}\&\ \mbox{\hyperlink{classFloatingItemPopupWindow}{caption}}\ =\ \mbox{\hyperlink{wxTimelineCtrlTestMainFrame_8h_a11737227da4092197b5589290fe22c72}{SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_TITLE}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classFloatingItemPopupWindow}{wxPoint}}\&\ \mbox{\hyperlink{classFloatingItemPopupWindow}{pos}}\ =\ \mbox{\hyperlink{wxTimelineCtrlTestMainFrame_8h_a9939b1d364c564e597c3a05ea388d512}{SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_POSITION}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classFloatingItemPopupWindow}{wxSize}}\&\ \mbox{\hyperlink{classFloatingItemPopupWindow}{size}}\ =\ \mbox{\hyperlink{wxTimelineCtrlTestMainFrame_8h_a377a4b2fb0b83d87447b4f63851dc9f0}{SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_SIZE}},\ \textcolor{keywordtype}{long}\ \mbox{\hyperlink{classFloatingItemPopupWindow}{style}}\ =\ \mbox{\hyperlink{wxTimelineCtrlTestMainFrame_8h_a1e895f1d909e1ca97a12c35bc28fae82}{SYMBOL\_WXTIMELINECTRLTESTMAINFRAME\_STYLE}});}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00060\ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_a4f10101b4acb9cb756566e2c07ed58d0}{\string~wxTimelineCtrlTestMainFrame}}();}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_ad493f625cce79b0c6416d94bdcc96fa8}{Init}}();}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_a68a1bd9b50ef2d9b6b67de4fe04109c7}{CreateControls}}();}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_a010942c1e5737800cadc4fe5a5e779d6}{OnAddClick}}(\mbox{\hyperlink{classFloatingItemPopupWindow}{wxCommandEvent}}\&\ \mbox{\hyperlink{classFloatingItemPopupWindow}{event}});}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_afc896d1837f836e5052452ff46090970}{OnDeleteClick}}(\mbox{\hyperlink{classFloatingItemPopupWindow}{wxCommandEvent}}\&\ \mbox{\hyperlink{classFloatingItemPopupWindow}{event}});}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_a7815e0dedb05ec2266629a2ef0fea44e}{OnExit}}(\mbox{\hyperlink{classFloatingItemPopupWindow}{wxCommandEvent}}\&\ \mbox{\hyperlink{classFloatingItemPopupWindow}{event}});}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_a5175d8bf5d194db5e5f10d5e8556a6d1}{OnTimelineItemSelected}}(\mbox{\hyperlink{classFloatingItemPopupWindow}{wxCommandEvent}}\&\ \mbox{\hyperlink{classFloatingItemPopupWindow}{event}});}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_acef996f11568590a49e97438c193a16b}{OnTimelineItemDeleted}}(\mbox{\hyperlink{classFloatingItemPopupWindow}{wxCommandEvent}}\&\ \mbox{\hyperlink{classFloatingItemPopupWindow}{event}});}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00078\ \ \ \ \ \mbox{\hyperlink{classFloatingItemPopupWindow}{wxBitmap}}\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_a1297345325858d5538a15f853d3d4075}{GetBitmapResource}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classFloatingItemPopupWindow}{wxString}}\&\ \mbox{\hyperlink{classFloatingItemPopupWindow}{name}});}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00081\ \ \ \ \ \mbox{\hyperlink{classFloatingItemPopupWindow}{wxIcon}}\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_a7296ca34fc4be1e6f67fa919d91946a0}{GetIconResource}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classFloatingItemPopupWindow}{wxString}}\&\ \mbox{\hyperlink{classFloatingItemPopupWindow}{name}});}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_ac4ab4e92a55d69c2dcf1cd97cbc9f367}{ShowToolTips}}();}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_a53137e07a630bb3291e7858a889f70f8}{UpdateUI}}();}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00092\ \ \ \ \ \mbox{\hyperlink{classFloatingItemPopupWindow}{wxTimelineCtrl<SampleData>}}*\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_a8af5f7f39525b5bfcadfd771d032cb66}{m\_Timeline}};}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \ \ \mbox{\hyperlink{classSampleData}{SampleData}}**\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_ab22f2f56e5e2965dd64420a08a50f75f}{m\_Data}};}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_a14cd07f980028a78a3e7454fceedf1e8}{m\_DataCount}};}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classwxTimelineCtrlTestMainFrame_ae05a221af1e102b28b888cd01e8452a5}{m\_DataCapacity}};}
+\DoxyCodeLine{00098\ \};}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \textcolor{comment}{//\ Helper\ function\ to\ format\ time}}
+\DoxyCodeLine{00101\ \mbox{\hyperlink{classFloatingItemPopupWindow}{wxString}}\ \mbox{\hyperlink{wxTimelineCtrlTestMainFrame_8h_ac406e6293f4b0c8e82313676ff400486}{FormatTime}}(\textcolor{keywordtype}{int}\ \mbox{\hyperlink{classFloatingItemPopupWindow}{seconds}});}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00104\ \textcolor{comment}{//\ \_WXTIMELINECTRLTESTMAINFRAME\_H\_}}
+
+\end{DoxyCode}

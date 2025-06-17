@@ -1,0 +1,717 @@
+\doxysection{wx\+Timeline\+Ctrl.\+h}
+\hypertarget{wxTimelineCtrl_8h_source}{}\label{wxTimelineCtrl_8h_source}\mbox{\hyperlink{wxTimelineCtrl_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ \_WX\_TIMELINE\_CTRL\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ \_WX\_TIMELINE\_CTRL\_H}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <wx/wx.h>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <wx/dcbuffer.h>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <wx/dcgraph.h>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <wx/vector.h>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <wx/timer.h>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{TimelineArtProvider_8h}{TimelineArtProvider.h}}"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{TimelineItem_8h}{TimelineItem.h}}"{}}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <set>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <utility>}\ }
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <algorithm>}\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <numeric>}\ }
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{FloatingItemPopupWindow_8h}{FloatingItemPopupWindow.h}}"{}}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ Tval>}
+\DoxyCodeLine{00018\ Tval\ \mbox{\hyperlink{wxTimelineCtrl_8h_ab8a15ce84b30d6ee992a81301e8bb4b6}{wxClip}}(Tval\ value,\ Tval\ min\_val,\ Tval\ max\_val)\ }
+\DoxyCodeLine{00019\ \{}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordflow}{if}\ (value\ <\ min\_val)\ \textcolor{keywordflow}{return}\ min\_val;}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordflow}{if}\ (value\ >\ max\_val)\ \textcolor{keywordflow}{return}\ max\_val;}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordflow}{return}\ value;}
+\DoxyCodeLine{00023\ \}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ wxDECLARE\_EVENT(wxEVT\_TIMELINE\_ZOOM,\ wxCommandEvent);}
+\DoxyCodeLine{00026\ wxDECLARE\_EVENT(wxEVT\_TIMELINE\_SELECTION,\ wxCommandEvent);}
+\DoxyCodeLine{00027\ wxDECLARE\_EVENT(wxEVT\_TIMELINE\_ITEM\_DELETED,\ wxCommandEvent);}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{enum}}
+\DoxyCodeLine{00030\ \{}
+\DoxyCodeLine{00031\ \ \ \ \ \mbox{\hyperlink{wxTimelineCtrl_8h_a06fc87d81c62e9abb8790b6e5713c55bad853996630778a53967ed0be531b6d25}{ID\_TIMELINE\_DELETE}}\ =\ wxID\_HIGHEST\ +\ 1000,}
+\DoxyCodeLine{00032\ \ \ \ \ \mbox{\hyperlink{wxTimelineCtrl_8h_a06fc87d81c62e9abb8790b6e5713c55ba0d014219899d8dc5ca861c882bd89a56}{ID\_TIMELINE\_DELETE\_SCROLLER\_ITEM}}}
+\DoxyCodeLine{00033\ \};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{//\ -\/-\/-\/\ Template\ Timeline\ Control\ -\/-\/-\/}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classwxTimelineCtrl}{wxTimelineCtrl}}\ :\ \textcolor{keyword}{public}\ wxControl}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classwxTimelineCtrl_a0b23a88007252458536a8188035d5e28}{TimelineItemVector}}\ =\ wxVector<\ TimelineItem<T>\ >;}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a5659569074393c513c808ee933bb351c}{MAX\_ITEMS}}\ =\ 65536;}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{enum}\ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}}
+\DoxyCodeLine{00044\ \ \ \ \ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211a4a427bd285bbc2f7483e591c7cb55b3c}{ET\_NONE}}\ =\ 0,}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211a4c686aeb847f34d14988e8bd857f3c7d}{ET\_TIMELINE}},}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211af083a770e90b969b4e641a99fbdd334e}{ET\_SCROLLER}},}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211a32a443ccb1f85bd02f88af5714c909cf}{ET\_VISIBLE\_FRAME}},}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211a88bfb2cd4c1a6ceefe66f5b3ce5ea38c}{ET\_VISIBLE\_FRAME\_LEFT}},}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211a49d1f6835da665984c2ef569f4e89cf9}{ET\_VISIBLE\_FRAME\_RIGHT}},}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211a73c7727cc66c2463c1f50677dac575a6}{ET\_LEFT\_ARROW}},}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211a5e8543a34444e291b63536f3494a5223}{ET\_RIGHT\_ARROW}},}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211ab042749b54f606c3cd0e69220ff16d7a}{ET\_SCROLLER\_ITEM\_DRAG}},}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211ad33031aac7ad2978998e0569f0100895}{ET\_TIMELINE\_ITEM}},}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211a5ea2f5e10462d7bb890a9ae08f60c935}{ET\_TIMELINE\_ITEM\_MAX}}\ =\ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211ad33031aac7ad2978998e0569f0100895}{ET\_TIMELINE\_ITEM}}\ +\ \mbox{\hyperlink{classwxTimelineCtrl_a5659569074393c513c808ee933bb351c}{MAX\_ITEMS}}\ *\ 3,}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211a8b1e0836c79d66150ba0ebbfd468efca}{ET\_TIMELINE\_SELECTION}},}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211a3abd879ba0377f9e0e5e61356afb06bd}{ET\_MAX}}}
+\DoxyCodeLine{00058\ \ \ \ \ \};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00061\ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a493890362f95208bc428d89377c2dbac}{wxTimelineCtrl}}()\ \{\ \mbox{\hyperlink{classwxTimelineCtrl_a6f9a3ab3d8633bd4f88b4de7ea4c25b9}{Init}}();\ \}}
+\DoxyCodeLine{00062\ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a996a0d75e9b33c672d088ddef10c1de7}{wxTimelineCtrl}}(wxWindow*\ parent,\ wxWindowID\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ wxPoint\&\ pos\ =\ wxDefaultPosition,\ \textcolor{keyword}{const}\ wxSize\&\ size\ =\ wxDefaultSize)}
+\DoxyCodeLine{00063\ \ \ \ \ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a6f9a3ab3d8633bd4f88b4de7ea4c25b9}{Init}}();}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_adcb6c11aebed2e5abf9edfae8186c2e6}{Create}}(parent,\ \textcolor{keywordtype}{id},\ pos,\ size);}
+\DoxyCodeLine{00066\ \ \ \ \ \}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classwxTimelineCtrl_a7f7c7723562fbcaac73d29876819cf58}{\string~wxTimelineCtrl}}()}
+\DoxyCodeLine{00069\ \ \ \ \ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classwxTimelineCtrl_aa9a726cc55d2db8b7d48b1752bd1bebd}{m\_timerMove}}.IsRunning())}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_aa9a726cc55d2db8b7d48b1752bd1bebd}{m\_timerMove}}.Stop();}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}\ \mbox{\hyperlink{classwxTimelineCtrl_aa1bee3390067dde88050c4de0291413a}{m\_artProvider}};}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classwxTimelineCtrl_adcb6c11aebed2e5abf9edfae8186c2e6}{Create}}(wxWindow*\ parent,\ wxWindowID\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ wxPoint\&\ pos\ =\ wxDefaultPosition,\ \textcolor{keyword}{const}\ wxSize\&\ size\ =\ wxDefaultSize)}
+\DoxyCodeLine{00076\ \ \ \ \ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!wxControl::Create(parent,\ \textcolor{keywordtype}{id},\ pos,\ size,\ wxWANTS\_CHARS\ |\ wxNO\_BORDER))}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ SetBackgroundStyle(wxBG\_STYLE\_PAINT);}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a00d6a183ac0b264511d5cb4d9a79861e}{SetEventHandlers}}();}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_aa1bee3390067dde88050c4de0291413a}{m\_artProvider}}-\/>\mbox{\hyperlink{classTimelineArtProvider_a899ef0eee0875031470b56fd8ab88c91}{SetBackgroundColour}}(GetBackgroundColour());}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a7f90c37f8be7e04c89208565187d4bfd}{RecalcRects}}();}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00084\ \ \ \ \ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a6f9a3ab3d8633bd4f88b4de7ea4c25b9}{Init}}();}
+\DoxyCodeLine{00087\ \ \ \ \ }
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_ad4eb137e57087225e838edac0031dad5}{ZoomToSelection}}()}
+\DoxyCodeLine{00089\ \ \ \ \ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{classwxTimelineCtrl_a8d89065c3546ff4bcadec6f1be409c7f}{m\_selectionRect}}.IsEmpty()\ \&\&\ \mbox{\hyperlink{classwxTimelineCtrl_a8d89065c3546ff4bcadec6f1be409c7f}{m\_selectionRect}}.width\ >\ 5)}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ startTime\ =\ \mbox{\hyperlink{classwxTimelineCtrl_adb4469aa321c0c4efa771427da14365e}{m\_firstVisibleTime}}\ +\ \mbox{\hyperlink{classwxTimelineCtrl_a4a98452219050e02324ab9a8b7dcce53}{TimelineCoordToTime}}(\mbox{\hyperlink{classwxTimelineCtrl_a8d89065c3546ff4bcadec6f1be409c7f}{m\_selectionRect}}.GetLeft()\ -\/\ \mbox{\hyperlink{classwxTimelineCtrl_a6c0e9b256736dc896cef1e98ce7d82f9}{m\_rectTimelineTrack}}.x);}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ endTime\ =\ \mbox{\hyperlink{classwxTimelineCtrl_adb4469aa321c0c4efa771427da14365e}{m\_firstVisibleTime}}\ +\ \mbox{\hyperlink{classwxTimelineCtrl_a4a98452219050e02324ab9a8b7dcce53}{TimelineCoordToTime}}(\mbox{\hyperlink{classwxTimelineCtrl_a8d89065c3546ff4bcadec6f1be409c7f}{m\_selectionRect}}.GetRight()\ -\/\ \mbox{\hyperlink{classwxTimelineCtrl_a6c0e9b256736dc896cef1e98ce7d82f9}{m\_rectTimelineTrack}}.x);}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (startTime\ <\ 0)\ startTime\ =\ 0;}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (endTime\ >\ \mbox{\hyperlink{classwxTimelineCtrl_ab8b41b650d7410aaa00af8de8898672a}{m\_totalDuration}})\ endTime\ =\ \mbox{\hyperlink{classwxTimelineCtrl_ab8b41b650d7410aaa00af8de8898672a}{m\_totalDuration}};}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (endTime\ <=\ startTime)\ endTime\ =\ startTime\ +\ \mbox{\hyperlink{classwxTimelineCtrl_a015e8b9e69219070999b49783b7cd43f}{m\_minVisibleDuration}};}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ newDuration\ =\ endTime\ -\/\ startTime;}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ wxLogDebug(\textcolor{stringliteral}{"{}ZoomToSelection:\ startTime=\%d,\ endTime=\%d,\ newDuration=\%d"{}},\ }
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ startTime,\ endTime,\ newDuration);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newDuration\ >=\ \mbox{\hyperlink{classwxTimelineCtrl_a015e8b9e69219070999b49783b7cd43f}{m\_minVisibleDuration}})}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ padding\ =\ newDuration\ /\ 20;}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (padding\ <\ 1)\ padding\ =\ 1;}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ startTime\ =\ wxMax(0,\ startTime\ -\/\ padding);}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ endTime\ =\ wxMin(\mbox{\hyperlink{classwxTimelineCtrl_ab8b41b650d7410aaa00af8de8898672a}{m\_totalDuration}},\ endTime\ +\ padding);}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a7ca28c95ef1596d2f00c58f8459a77d7}{SetVisibleTimeRange}}(startTime,\ endTime);}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a6aa861d9155be891ec884a07893ec091}{ClearSelection}}();}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ wxCommandEvent\ event(wxEVT\_TIMELINE\_ZOOM,\ GetId());}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{event}.SetEventObject(\textcolor{keyword}{this});}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{event}.SetInt(\mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}});}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ProcessWindowEvent(event);}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ wxLogDebug(\textcolor{stringliteral}{"{}Zoom\ applied:\ firstVisible=\%d,\ duration=\%d"{}},\ }
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_adb4469aa321c0c4efa771427da14365e}{m\_firstVisibleTime}},\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}});}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00125\ \ \ \ \ \}}
+\DoxyCodeLine{00126\ \ \ \ \ }
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a8037a3f90e7ab779619691f5aa41f5d3}{ZoomToTimePoint}}(\textcolor{keywordtype}{int}\ timePoint,\ \textcolor{keywordtype}{int}\ zoomLevel\ =\ -\/1)}
+\DoxyCodeLine{00128\ \ \ \ \ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (zoomLevel\ <\ 0)}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ zoomLevel\ =\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}}\ /\ 2;}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ zoomLevel\ =\ \mbox{\hyperlink{wxTimelineCtrl_8h_ab8a15ce84b30d6ee992a81301e8bb4b6}{wxClip}}(zoomLevel,\ \mbox{\hyperlink{classwxTimelineCtrl_a015e8b9e69219070999b49783b7cd43f}{m\_minVisibleDuration}},\ \mbox{\hyperlink{classwxTimelineCtrl_a383ee7cc897f9bfd907f4e36ec8684a6}{m\_maxVisibleDuration}});}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ timePoint\ =\ \mbox{\hyperlink{wxTimelineCtrl_8h_ab8a15ce84b30d6ee992a81301e8bb4b6}{wxClip}}(timePoint,\ 0,\ \mbox{\hyperlink{classwxTimelineCtrl_ab8b41b650d7410aaa00af8de8898672a}{m\_totalDuration}});}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ halfZoom\ =\ zoomLevel\ /\ 2;}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ startTime\ =\ wxMax(0,\ timePoint\ -\/\ halfZoom);}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ endTime\ =\ wxMin(\mbox{\hyperlink{classwxTimelineCtrl_ab8b41b650d7410aaa00af8de8898672a}{m\_totalDuration}},\ timePoint\ +\ halfZoom);}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a7ca28c95ef1596d2f00c58f8459a77d7}{SetVisibleTimeRange}}(startTime,\ endTime);}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ wxLogDebug(\textcolor{stringliteral}{"{}ZoomToTimePoint:\ timePoint=\%d,\ zoomLevel=\%d,\ visible=\%d-\/\%d"{}},\ }
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timePoint,\ zoomLevel,\ startTime,\ endTime);}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ wxCommandEvent\ event(wxEVT\_TIMELINE\_ZOOM,\ GetId());}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \textcolor{keyword}{event}.SetEventObject(\textcolor{keyword}{this});}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \textcolor{keyword}{event}.SetInt(\mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}});}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ ProcessWindowEvent(event);}
+\DoxyCodeLine{00149\ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ }
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a6aa861d9155be891ec884a07893ec091}{ClearSelection}}()}
+\DoxyCodeLine{00152\ \ \ \ \ \{}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a0ad1c2c39ebb1ab69495954acf6ffa82}{m\_isSelecting}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a8d89065c3546ff4bcadec6f1be409c7f}{m\_selectionRect}}\ =\ wxRect();}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}}.clear();}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a416b34eef11ac725828ca7622db59ed9}{m\_contextMenuItemIndex}}\ =\ -\/1;}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ Refresh();}
+\DoxyCodeLine{00158\ \ \ \ \ \}}
+\DoxyCodeLine{00159\ \ \ \ \ }
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{comment}{//\ Get\ selected\ items\ indices}}
+\DoxyCodeLine{00161\ \ \ \ \ \textcolor{keyword}{const}\ wxVector<size\_t>\&\ \mbox{\hyperlink{classwxTimelineCtrl_ab3fad761946c9d297f664b29e771e05a}{GetSelectedItems}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00162\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}};}
+\DoxyCodeLine{00164\ \ \ \ \ \}}
+\DoxyCodeLine{00165\ \ \ \ \ }
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{comment}{//\ Check\ if\ an\ item\ is\ selected}}
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classwxTimelineCtrl_a32ef5339c62d34a9435f7addb4b06570}{IsItemSelected}}(\textcolor{keywordtype}{size\_t}\ index)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00168\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::find(\mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}}.begin(),\ \mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}}.end(),\ index)\ !=\ \mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}}.end();}
+\DoxyCodeLine{00170\ \ \ \ \ \}}
+\DoxyCodeLine{00171\ \ \ \ \ }
+\DoxyCodeLine{00172\ \ \ \ \ \textcolor{comment}{//\ Toggle\ item\ selection}}
+\DoxyCodeLine{00173\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a06bcb095f919b60a21e383747f85979b}{ToggleItemSelection}}(\textcolor{keywordtype}{size\_t}\ index)}
+\DoxyCodeLine{00174\ \ \ \ \ \{}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ std::find(\mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}}.begin(),\ \mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}}.end(),\ index);}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ \mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}}.end())}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}}.erase(it);}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}}.push\_back(index);}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ Refresh();}
+\DoxyCodeLine{00181\ \ \ \ \ \}}
+\DoxyCodeLine{00182\ \ \ \ \ }
+\DoxyCodeLine{00183\ \ \ \ \ \textcolor{comment}{//\ Select\ an\ item}}
+\DoxyCodeLine{00184\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a4d69c7a11cf4f2bc5d4ff31340016dbb}{SelectItem}}(\textcolor{keywordtype}{size\_t}\ index,\ \textcolor{keywordtype}{bool}\ clearPrevious\ =\ \textcolor{keyword}{true})}
+\DoxyCodeLine{00185\ \ \ \ \ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ wxLogDebug(\textcolor{stringliteral}{"{}SelectItem:\ index=\%d,\ clearPrevious=\%d"{}},\ (\textcolor{keywordtype}{int})index,\ clearPrevious);}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (index\ >=\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.size())}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ wxLogDebug(\textcolor{stringliteral}{"{}SelectItem:\ index\ \%d\ out\ of\ range\ (size=\%d)"{}},\ (\textcolor{keywordtype}{int})index,\ (\textcolor{keywordtype}{int})\mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.size());}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (clearPrevious)}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ wxLogDebug(\textcolor{stringliteral}{"{}SelectItem:\ clearing\ previous\ selection"{}});}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}}.clear();}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{classwxTimelineCtrl_a32ef5339c62d34a9435f7addb4b06570}{IsItemSelected}}(index))}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ wxLogDebug(\textcolor{stringliteral}{"{}SelectItem:\ adding\ index\ \%d\ to\ selection"{}},\ (\textcolor{keywordtype}{int})index);}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}}.push\_back(index);}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ wxLogDebug(\textcolor{stringliteral}{"{}SelectItem:\ selection\ size\ now\ \%d"{}},\ (\textcolor{keywordtype}{int})\mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}}.size());}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ wxLogDebug(\textcolor{stringliteral}{"{}Current\ selection\ after\ SelectItem:"{}});}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ \mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}}.size();\ ++i)\ \{}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ wxLogDebug(\textcolor{stringliteral}{"{}\ \ Selected\ item\ \%d:\ index=\%d"{}},\ (\textcolor{keywordtype}{int})i,\ (\textcolor{keywordtype}{int})\mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}}[i]);}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ Refresh();}
+\DoxyCodeLine{00213\ \ \ \ \ \}}
+\DoxyCodeLine{00214\ \ \ \ \ }
+\DoxyCodeLine{00215\ \ \ \ \ \textcolor{comment}{//\ Remove\ selected\ items}}
+\DoxyCodeLine{00216\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a3c90b0ec6e6cb2118e29df0de92b3e1a}{RemoveSelectedItems}}();}
+\DoxyCodeLine{00217\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a396b67e2ece41afe2978647bb2f8f263}{RemoveContextScrollerItem}}();}
+\DoxyCodeLine{00218\ \ \ \ \ }
+\DoxyCodeLine{00219\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_ae027ed18843d080de67932f1fc35fe13}{GetZoomLevel}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00220\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}};}
+\DoxyCodeLine{00222\ \ \ \ \ \}}
+\DoxyCodeLine{00223\ \ \ \ \ }
+\DoxyCodeLine{00224\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a72ba821f27ca6f30226a0dbf086adefd}{SetZoomLevel}}(\textcolor{keywordtype}{int}\ zoomLevelSeconds)}
+\DoxyCodeLine{00225\ \ \ \ \ \{}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ zoomLevelSeconds\ =\ \mbox{\hyperlink{wxTimelineCtrl_8h_ab8a15ce84b30d6ee992a81301e8bb4b6}{wxClip}}(zoomLevelSeconds,\ \mbox{\hyperlink{classwxTimelineCtrl_a015e8b9e69219070999b49783b7cd43f}{m\_minVisibleDuration}},\ \mbox{\hyperlink{classwxTimelineCtrl_a383ee7cc897f9bfd907f4e36ec8684a6}{m\_maxVisibleDuration}});}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (zoomLevelSeconds\ ==\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}})}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ centerTime\ =\ \mbox{\hyperlink{classwxTimelineCtrl_adb4469aa321c0c4efa771427da14365e}{m\_firstVisibleTime}}\ +\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}}\ /\ 2;}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_ab0e2ec7a8c002acf57f2c8e49d6b3b25}{ZoomAtPosition}}(\mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}}\ -\/\ zoomLevelSeconds,\ centerTime);}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ wxCommandEvent\ event(wxEVT\_TIMELINE\_ZOOM,\ GetId());}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \textcolor{keyword}{event}.SetEventObject(\textcolor{keyword}{this});}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \textcolor{keyword}{event}.SetInt(\mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}});}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ ProcessWindowEvent(event);}
+\DoxyCodeLine{00238\ \ \ \ \ \}}
+\DoxyCodeLine{00239\ \ \ \ \ }
+\DoxyCodeLine{00240\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_ae5b90a77ea3367df6423a7f150d57ab6}{ShowAllTimeline}}()}
+\DoxyCodeLine{00241\ \ \ \ \ \{}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a7ca28c95ef1596d2f00c58f8459a77d7}{SetVisibleTimeRange}}(0,\ \mbox{\hyperlink{classwxTimelineCtrl_ab8b41b650d7410aaa00af8de8898672a}{m\_totalDuration}});}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ wxLogDebug(\textcolor{stringliteral}{"{}ShowAllTimeline:\ firstVisible=\%d,\ duration=\%d"{}},\ }
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_adb4469aa321c0c4efa771427da14365e}{m\_firstVisibleTime}},\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}});}
+\DoxyCodeLine{00246\ \ \ \ \ \}}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00248\ \ \ \ \ \textcolor{comment}{//\ Add\ an\ item\ with\ a\ specific\ color}}
+\DoxyCodeLine{00249\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a35ab853205d11a6f5821e2d0d7f7b79f}{AddItem}}(T*\ data,\ \textcolor{keyword}{const}\ wxColour\&\ colour\ =\ wxNullColour);}
+\DoxyCodeLine{00250\ \ \ \ \ }
+\DoxyCodeLine{00251\ \ \ \ \ \textcolor{comment}{//\ Set\ color\ for\ a\ specific\ item}}
+\DoxyCodeLine{00252\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classwxTimelineCtrl_aa4d5c9b7dc1e393d55069f5625afcb06}{SetItemColor}}(\textcolor{keywordtype}{size\_t}\ index,\ \textcolor{keyword}{const}\ wxColour\&\ colour)}
+\DoxyCodeLine{00253\ \ \ \ \ \{}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (index\ >=\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.size()\ ||\ !colour.IsOk())}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}[index].SetColour(colour);}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ Refresh();}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00260\ \ \ \ \ \}}
+\DoxyCodeLine{00261\ \ \ \ \ }
+\DoxyCodeLine{00262\ \ \ \ \ \textcolor{comment}{//\ Set\ color\ for\ a\ specific\ item\ by\ data\ pointer}}
+\DoxyCodeLine{00263\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classwxTimelineCtrl_a874e621211541bc3b7c7f44529a1e499}{SetItemColor}}(T*\ data,\ \textcolor{keyword}{const}\ wxColour\&\ colour)}
+\DoxyCodeLine{00264\ \ \ \ \ \{}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!data\ ||\ !colour.IsOk())}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ \mbox{\hyperlink{classwxTimelineCtrl_a981b93fffe03a7b251ca9ac21f15d483}{FindItem}}(data);}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.end())}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>SetColour(colour);}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ Refresh();}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00276\ \ \ \ \ \}}
+\DoxyCodeLine{00277\ \ \ \ \ }
+\DoxyCodeLine{00278\ \ \ \ \ \textcolor{comment}{//\ Updates\ the\ total\ timeline\ duration\ based\ on\ added\ items}}
+\DoxyCodeLine{00279\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_aa6ddf4d3db5342f2bf9e1c2d68a5f1a4}{UpdateTotalDurationForItems}}()}
+\DoxyCodeLine{00280\ \ \ \ \ \{}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.empty())\ \{}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classwxTimelineCtrl_ab8b41b650d7410aaa00af8de8898672a}{m\_totalDuration}}\ !=\ \mbox{\hyperlink{classwxTimelineCtrl_a015e8b9e69219070999b49783b7cd43f}{m\_minVisibleDuration}})\ \{}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a39176af21158480feb1e4b1fdd83ee50}{SetTotalDuration}}(\mbox{\hyperlink{classwxTimelineCtrl_a015e8b9e69219070999b49783b7cd43f}{m\_minVisibleDuration}});}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ maxEndTime\ =\ 0;}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ item\ :\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}})}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (item.Data)}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ itemEndTime\ =\ item.Data-\/>GetEndTime();}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (itemEndTime\ >\ maxEndTime)}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ maxEndTime\ =\ itemEndTime;}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ newDuration\ =\ maxEndTime;}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newDuration\ !=\ \mbox{\hyperlink{classwxTimelineCtrl_ab8b41b650d7410aaa00af8de8898672a}{m\_totalDuration}})}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a39176af21158480feb1e4b1fdd83ee50}{SetTotalDuration}}(newDuration);}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00306\ \ \ \ \ \}}
+\DoxyCodeLine{00307\ }
+\DoxyCodeLine{00308\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_ac91d392a2dce7270bda217bb8bcdcd12}{RemoveItem}}(T*\ data)}
+\DoxyCodeLine{00309\ \ \ \ \ \{}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ it\ =\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.begin();\ it\ !=\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.end();\ ++it)}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it-\/>Data\ ==\ data)}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.erase(it);}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_aa6ddf4d3db5342f2bf9e1c2d68a5f1a4}{UpdateTotalDurationForItems}}();}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classwxTimelineCtrl_adb4469aa321c0c4efa771427da14365e}{m\_firstVisibleTime}}\ +\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}}\ >\ \mbox{\hyperlink{classwxTimelineCtrl_ab8b41b650d7410aaa00af8de8898672a}{m\_totalDuration}})}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a0fffabb1bfa0847048148be11acf0c9d}{SetFirstVisibleTime}}(wxMax(0,\ \mbox{\hyperlink{classwxTimelineCtrl_ab8b41b650d7410aaa00af8de8898672a}{m\_totalDuration}}\ -\/\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}}));}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a52cfca00089c603085e4ad3d2db15d96}{TimeChanged}}();}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ Refresh();}
+\DoxyCodeLine{00328\ \ \ \ \ \}}
+\DoxyCodeLine{00329\ }
+\DoxyCodeLine{00330\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_ad3a9465e86287a5cbcdb59cb108dfa34}{ClearItems}}()}
+\DoxyCodeLine{00331\ \ \ \ \ \{}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.clear();}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a52cfca00089c603085e4ad3d2db15d96}{TimeChanged}}();}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ Refresh();}
+\DoxyCodeLine{00335\ \ \ \ \ \}}
+\DoxyCodeLine{00336\ }
+\DoxyCodeLine{00337\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a761587a996d3feef04de1d3a8b66e6d9}{SwapItems}}(T*\ item1,\ T*\ item2)}
+\DoxyCodeLine{00338\ \ \ \ \ \{}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it1\ =\ \mbox{\hyperlink{classwxTimelineCtrl_a981b93fffe03a7b251ca9ac21f15d483}{FindItem}}(item1);}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it2\ =\ \mbox{\hyperlink{classwxTimelineCtrl_a981b93fffe03a7b251ca9ac21f15d483}{FindItem}}(item2);}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it1\ !=\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.end()\ \&\&\ it2\ !=\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.end())}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ std::swap(*it1,\ *it2);}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a988e65943471dfd665aad425aafa79e1}{RecalcItems}}();}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ Refresh();}
+\DoxyCodeLine{00345\ \ \ \ \ \}}
+\DoxyCodeLine{00346\ }
+\DoxyCodeLine{00347\ \ \ \ \ wxColour\ \mbox{\hyperlink{classwxTimelineCtrl_ac78f2fe6adf84aa790855e127a76eb92}{GetItemColour}}(\textcolor{keywordtype}{int}\ index)}
+\DoxyCodeLine{00348\ \ \ \ \ \{}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ wxImage::HSVValue\ hsv(0,\ 1,\ 1);}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dummy;}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ hsv.hue\ =\ modf(index\ *\ 0.07,\ \&dummy);}
+\DoxyCodeLine{00352\ }
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ wxImage::RGBValue\ rgb\ =\ wxImage::HSVtoRGB(hsv);}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ wxColour\ color(rgb.red,\ rgb.green,\ rgb.blue);}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ color.ChangeLightness(90);}
+\DoxyCodeLine{00356\ \ \ \ \ \}}
+\DoxyCodeLine{00357\ \ \ \ \ }
+\DoxyCodeLine{00358\ \ \ \ \ \textcolor{comment}{//\ Get\ the\ color\ of\ a\ specific\ item}}
+\DoxyCodeLine{00359\ \ \ \ \ wxColour\ \mbox{\hyperlink{classwxTimelineCtrl_a6e625eb274b4ca8606fd12a84de48ef3}{GetItemColor}}(\textcolor{keywordtype}{size\_t}\ index)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00360\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (index\ <\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.size())}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}[index].Colour;}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ wxNullColour;}
+\DoxyCodeLine{00364\ \ \ \ \ \}}
+\DoxyCodeLine{00365\ \ \ \ \ }
+\DoxyCodeLine{00366\ \ \ \ \ \textcolor{comment}{//\ Get\ the\ color\ of\ a\ specific\ item\ by\ data\ pointer}}
+\DoxyCodeLine{00367\ \ \ \ \ wxColour\ \mbox{\hyperlink{classwxTimelineCtrl_a4fd497d2bc87838e00c21de4c52195fc}{GetItemColor}}(T*\ data)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00368\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!data)}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ wxNullColour;}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ item\ :\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}})}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (item.Data\ ==\ data)}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ item.Colour;}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ wxNullColour;}
+\DoxyCodeLine{00378\ \ \ \ \ \}}
+\DoxyCodeLine{00379\ }
+\DoxyCodeLine{00380\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_acd99c3f6918102730a393d3ee5a723e3}{SetStartTime}}(\textcolor{keyword}{const}\ wxDateTime\&\ val)\ \{\ \mbox{\hyperlink{classwxTimelineCtrl_a5782925735e2ef921b36f237ed1b2bfa}{m\_startTime}}\ =\ val;\ \}}
+\DoxyCodeLine{00381\ \ \ \ \ wxDateTime\ \mbox{\hyperlink{classwxTimelineCtrl_ad7f198625c4aeb99f01e6315312825ad}{GetStartTime}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classwxTimelineCtrl_a5782925735e2ef921b36f237ed1b2bfa}{m\_startTime}};\ \}}
+\DoxyCodeLine{00382\ }
+\DoxyCodeLine{00383\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a77450c34c82a7bca0ba46a409c14333f}{SetDefaultDuration}}(\textcolor{keywordtype}{int}\ seconds)\ \{\ \mbox{\hyperlink{classwxTimelineCtrl_a9518fccbc010f4880061245ba2001e6c}{m\_defaultDuration}}\ =\ seconds;\ \}}
+\DoxyCodeLine{00384\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a9b7af7c9b18f6a861acab49e980409a0}{GetDefaultDuration}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classwxTimelineCtrl_a9518fccbc010f4880061245ba2001e6c}{m\_defaultDuration}};\ \}}
+\DoxyCodeLine{00385\ }
+\DoxyCodeLine{00386\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a39176af21158480feb1e4b1fdd83ee50}{SetTotalDuration}}(\textcolor{keywordtype}{int}\ seconds);}
+\DoxyCodeLine{00387\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a6bff2dd180c80f2f23be9f2cb0b18fcb}{GetTotalDuration}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classwxTimelineCtrl_ab8b41b650d7410aaa00af8de8898672a}{m\_totalDuration}};\ \}}
+\DoxyCodeLine{00388\ }
+\DoxyCodeLine{00389\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a0fffabb1bfa0847048148be11acf0c9d}{SetFirstVisibleTime}}(\textcolor{keywordtype}{int}\ seconds);}
+\DoxyCodeLine{00390\ }
+\DoxyCodeLine{00391\ }
+\DoxyCodeLine{00392\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a94e30f9e28d5a47665f4bf91495117bb}{GetFirstVisibleTime}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classwxTimelineCtrl_adb4469aa321c0c4efa771427da14365e}{m\_firstVisibleTime}};\ \}}
+\DoxyCodeLine{00393\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a156c4bc64dc69df5a1baee88d3800d1d}{GetLastVisibleTime}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classwxTimelineCtrl_adb4469aa321c0c4efa771427da14365e}{m\_firstVisibleTime}}\ +\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}};\ \}}
+\DoxyCodeLine{00394\ \ \ \ \ }
+\DoxyCodeLine{00395\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a7ca28c95ef1596d2f00c58f8459a77d7}{SetVisibleTimeRange}}(\textcolor{keywordtype}{int}\ startSeconds,\ \textcolor{keywordtype}{int}\ endSeconds)}
+\DoxyCodeLine{00396\ \ \ \ \ \{}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (startSeconds\ >=\ endSeconds)}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ newDuration\ =\ endSeconds\ -\/\ startSeconds;}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newDuration\ <\ \mbox{\hyperlink{classwxTimelineCtrl_a015e8b9e69219070999b49783b7cd43f}{m\_minVisibleDuration}})}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ newDuration\ =\ \mbox{\hyperlink{classwxTimelineCtrl_a015e8b9e69219070999b49783b7cd43f}{m\_minVisibleDuration}};}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a6f38cf8ea46debe77bd8e28c888dd5d1}{SetVisibleDuration}}(newDuration);}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a0fffabb1bfa0847048148be11acf0c9d}{SetFirstVisibleTime}}(startSeconds);}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a49788893107972a7049861e67eda02a1}{RecalcVisibleFrame}}();}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a988e65943471dfd665aad425aafa79e1}{RecalcItems}}();}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ Refresh();}
+\DoxyCodeLine{00411\ \ \ \ \ \}}
+\DoxyCodeLine{00412\ }
+\DoxyCodeLine{00413\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a6f38cf8ea46debe77bd8e28c888dd5d1}{SetVisibleDuration}}(\textcolor{keywordtype}{int}\ seconds);}
+\DoxyCodeLine{00414\ }
+\DoxyCodeLine{00415\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_aba8115ee1e57ed2b0910dfd4bd1cee33}{GetVisibleDuration}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}};\ \}}
+\DoxyCodeLine{00416\ }
+\DoxyCodeLine{00417\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_ab0e2ec7a8c002acf57f2c8e49d6b3b25}{ZoomAtPosition}}(\textcolor{keywordtype}{int}\ deltaSeconds,\ \textcolor{keywordtype}{int}\ fixedTimePosition\ =\ -\/1)}
+\DoxyCodeLine{00418\ \ \ \ \ \{}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fixedTimePosition\ <\ 0)}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ fixedTimePosition\ =\ \mbox{\hyperlink{classwxTimelineCtrl_adb4469aa321c0c4efa771427da14365e}{m\_firstVisibleTime}}\ +\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}}\ /\ 2;}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ relativePos\ =\ 0.5;\ }
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fixedTimePosition\ >=\ \mbox{\hyperlink{classwxTimelineCtrl_adb4469aa321c0c4efa771427da14365e}{m\_firstVisibleTime}}\ \&\&\ fixedTimePosition\ <=\ \mbox{\hyperlink{classwxTimelineCtrl_a156c4bc64dc69df5a1baee88d3800d1d}{GetLastVisibleTime}}())}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ relativePos\ =\ (double)(fixedTimePosition\ -\/\ \mbox{\hyperlink{classwxTimelineCtrl_adb4469aa321c0c4efa771427da14365e}{m\_firstVisibleTime}})\ /\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}};}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ newDuration\ =\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}}\ -\/\ deltaSeconds;}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ newDuration\ =\ \mbox{\hyperlink{wxTimelineCtrl_8h_ab8a15ce84b30d6ee992a81301e8bb4b6}{wxClip}}(newDuration,\ \mbox{\hyperlink{classwxTimelineCtrl_a015e8b9e69219070999b49783b7cd43f}{m\_minVisibleDuration}},\ \mbox{\hyperlink{classwxTimelineCtrl_a383ee7cc897f9bfd907f4e36ec8684a6}{m\_maxVisibleDuration}});}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newDuration\ ==\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}})}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ newFirstVisible\ =\ fixedTimePosition\ -\/\ wxRound(relativePos\ *\ newDuration);}
+\DoxyCodeLine{00433\ \ \ \ \ }
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}}\ =\ newDuration;}
+\DoxyCodeLine{00435\ \ \ \ \ }
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newFirstVisible\ <\ 0)}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ newFirstVisible\ =\ 0;}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newFirstVisible\ +\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}}\ >\ \mbox{\hyperlink{classwxTimelineCtrl_ab8b41b650d7410aaa00af8de8898672a}{m\_totalDuration}})}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ newFirstVisible\ =\ \mbox{\hyperlink{classwxTimelineCtrl_ab8b41b650d7410aaa00af8de8898672a}{m\_totalDuration}}\ -\/\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}};}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_adb4469aa321c0c4efa771427da14365e}{m\_firstVisibleTime}}\ =\ newFirstVisible;}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_af7658f3f2ce41a88e2913bb09d6c131c}{CalcArrowsState}}();}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a49788893107972a7049861e67eda02a1}{RecalcVisibleFrame}}();}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a988e65943471dfd665aad425aafa79e1}{RecalcItems}}();}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ Refresh();}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ wxCommandEvent\ event(wxEVT\_TIMELINE\_ZOOM,\ GetId());}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \textcolor{keyword}{event}.SetEventObject(\textcolor{keyword}{this});}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \textcolor{keyword}{event}.SetInt(\mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}});}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ ProcessWindowEvent(event);}
+\DoxyCodeLine{00452\ \ \ \ \ \}}
+\DoxyCodeLine{00453\ \ \ \ \ }
+\DoxyCodeLine{00454\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a6ec8737d960b9becc9c265d97465e5cd}{Zoom}}(\textcolor{keywordtype}{int}\ deltaSeconds)}
+\DoxyCodeLine{00455\ \ \ \ \ \{}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (abs(deltaSeconds)\ ==\ 1)}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a6f38cf8ea46debe77bd8e28c888dd5d1}{SetVisibleDuration}}(\mbox{\hyperlink{classwxTimelineCtrl_aba8115ee1e57ed2b0910dfd4bd1cee33}{GetVisibleDuration}}()\ +\ deltaSeconds);}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_ab0e2ec7a8c002acf57f2c8e49d6b3b25}{ZoomAtPosition}}(deltaSeconds);}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00462\ \ \ \ \ \}}
+\DoxyCodeLine{00463\ \ \ \ \ }
+\DoxyCodeLine{00464\ \ \ \ \ \textcolor{keyword}{enum}\ \mbox{\hyperlink{classwxTimelineCtrl_af6cb73b5112eb069a634fe3fc5dacd81}{ZoomPreset}}\ \{}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_af6cb73b5112eb069a634fe3fc5dacd81abdefb5a8947f0b13aae2cb9752111d79}{ZOOM\_SECONDS\_10}}\ =\ 10,}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_af6cb73b5112eb069a634fe3fc5dacd81a7d1bbfeb0720ac777c6749ad62852959}{ZOOM\_SECONDS\_30}}\ =\ 30,}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_af6cb73b5112eb069a634fe3fc5dacd81a41f93dbf47a09628f2474532eba078eb}{ZOOM\_MINUTE\_1}}\ =\ 60,\ }
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_af6cb73b5112eb069a634fe3fc5dacd81a330e929566220d8409f48b320fcfa806}{ZOOM\_MINUTES\_2}}\ =\ 120,}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_af6cb73b5112eb069a634fe3fc5dacd81abf2c219d0a0657b7a71fe2431ecf9079}{ZOOM\_MINUTES\_5}}\ =\ 300,}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_af6cb73b5112eb069a634fe3fc5dacd81a113331db7a6e7f7303aec57d71c1a5b1}{ZOOM\_MINUTES\_10}}\ =\ 600,\ }
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_af6cb73b5112eb069a634fe3fc5dacd81a2d90fdccdc5d5ad2c3f46a8994b89a0a}{ZOOM\_ALL}}\ =\ -\/1\ }
+\DoxyCodeLine{00472\ \ \ \ \ \};}
+\DoxyCodeLine{00473\ \ \ \ \ }
+\DoxyCodeLine{00474\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a96b75869cc4ac6982be758fa1de302f2}{SetZoomPreset}}(\mbox{\hyperlink{classwxTimelineCtrl_af6cb73b5112eb069a634fe3fc5dacd81}{ZoomPreset}}\ preset)}
+\DoxyCodeLine{00475\ \ \ \ \ \{}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (preset\ ==\ \mbox{\hyperlink{classwxTimelineCtrl_af6cb73b5112eb069a634fe3fc5dacd81a2d90fdccdc5d5ad2c3f46a8994b89a0a}{ZOOM\_ALL}})}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_ae5b90a77ea3367df6423a7f150d57ab6}{ShowAllTimeline}}();}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ centerTime\ =\ \mbox{\hyperlink{classwxTimelineCtrl_adb4469aa321c0c4efa771427da14365e}{m\_firstVisibleTime}}\ +\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}}\ /\ 2;}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a72ba821f27ca6f30226a0dbf086adefd}{SetZoomLevel}}(preset);}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a09a1d72e17827c57c72100b6a0953fe6}{CenterOnTime}}(centerTime);}
+\DoxyCodeLine{00487\ \ \ \ \ \}}
+\DoxyCodeLine{00488\ }
+\DoxyCodeLine{00489\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a09a1d72e17827c57c72100b6a0953fe6}{CenterOnTime}}(\textcolor{keywordtype}{int}\ seconds)}
+\DoxyCodeLine{00490\ \ \ \ \ \{}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a0fffabb1bfa0847048148be11acf0c9d}{SetFirstVisibleTime}}(seconds\ -\/\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}}\ /\ 2);}
+\DoxyCodeLine{00492\ \ \ \ \ \}}
+\DoxyCodeLine{00493\ }
+\DoxyCodeLine{00494\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_af682a54a2fcb58b8170314f6d3f6bb9d}{ScrollerTimeToCoord}}(\textcolor{keywordtype}{int}\ time);}
+\DoxyCodeLine{00495\ }
+\DoxyCodeLine{00496\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a5d60a7d17a9bd3bc1d0708c32d500f1f}{TimelineTimeToCoord}}(\textcolor{keywordtype}{int}\ time)}
+\DoxyCodeLine{00497\ \ \ \ \ \{}
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ wxRound((\textcolor{keywordtype}{double})time\ *\ \mbox{\hyperlink{classwxTimelineCtrl_a6c0e9b256736dc896cef1e98ce7d82f9}{m\_rectTimelineTrack}}.width\ /\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}});}
+\DoxyCodeLine{00499\ \ \ \ \ \}}
+\DoxyCodeLine{00500\ }
+\DoxyCodeLine{00501\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a1aadcdb02a33c08866c83d14f8f3b3b2}{ScrollerCoordToTime}}(\textcolor{keywordtype}{int}\ coord)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00502\ }
+\DoxyCodeLine{00503\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a4a98452219050e02324ab9a8b7dcce53}{TimelineCoordToTime}}(\textcolor{keywordtype}{int}\ coord)}
+\DoxyCodeLine{00504\ \ \ \ \ \{}
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}}\ <=\ 0\ ||\ \mbox{\hyperlink{classwxTimelineCtrl_a6c0e9b256736dc896cef1e98ce7d82f9}{m\_rectTimelineTrack}}.width\ <=\ 0)}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (coord\ *\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}})\ /\ \mbox{\hyperlink{classwxTimelineCtrl_a6c0e9b256736dc896cef1e98ce7d82f9}{m\_rectTimelineTrack}}.width;}
+\DoxyCodeLine{00509\ \ \ \ \ \}}
+\DoxyCodeLine{00510\ }
+\DoxyCodeLine{00511\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a75312b105609156ba7549c779450fda7}{ClampFirstVisibleTime}}(\textcolor{keywordtype}{int}\ first)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00512\ }
+\DoxyCodeLine{00513\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00514\ \ \ \ \ \textcolor{comment}{//\ Drawing}}
+\DoxyCodeLine{00515\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_ab4b9ef2372d4eabe3c3b26d2ef6c6078}{OnPaint}}(wxPaintEvent\&\ evt);}
+\DoxyCodeLine{00516\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a46c7ff5d01f95b01c8598ec4c0478e3d}{OnEraseBackground}}(wxEraseEvent\&\ evt);}
+\DoxyCodeLine{00517\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a855eb823ce954a62950e6e3521d0e04c}{Draw}}(wxDC\&\ dc);}
+\DoxyCodeLine{00518\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a6657e53646dd6ea671e30b2a4b0bb94e}{DrawTimeline}}(wxDC\&\ dc);}
+\DoxyCodeLine{00519\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a57b1328bc911929c5a8791e2b442077c}{DrawScroller}}(wxDC\&\ dc);}
+\DoxyCodeLine{00520\ }
+\DoxyCodeLine{00521\ \ \ \ \ \textcolor{comment}{//\ Mouse\ \&\ Key\ Events}}
+\DoxyCodeLine{00522\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a00d6a183ac0b264511d5cb4d9a79861e}{SetEventHandlers}}();}
+\DoxyCodeLine{00523\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a46ade968d482b18eb98daea5a554e2b0}{OnMouse}}(wxMouseEvent\&\ evt);}
+\DoxyCodeLine{00524\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a3540125ba521c01c1e41c9b52d6bede4}{OnSize}}(wxSizeEvent\&\ evt);}
+\DoxyCodeLine{00525\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a308111c20eeadcc93be9ea787ac55f4c}{OnTimer}}(wxTimerEvent\&\ evt);}
+\DoxyCodeLine{00526\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a7cbdf44d9d126ad20ae1c3eb2ebe8908}{OnKeyDown}}(wxKeyEvent\&\ evt);}
+\DoxyCodeLine{00527\ }
+\DoxyCodeLine{00528\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_ad86caedc2a3c34bbaf5c09cf5673a1db}{OnMouseCaptureLost}}(wxMouseCaptureLostEvent\&\ evt);}
+\DoxyCodeLine{00529\ }
+\DoxyCodeLine{00530\ \ \ \ \ \textcolor{comment}{//\ Logic}}
+\DoxyCodeLine{00531\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a7f90c37f8be7e04c89208565187d4bfd}{RecalcRects}}();}
+\DoxyCodeLine{00532\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a49788893107972a7049861e67eda02a1}{RecalcVisibleFrame}}();}
+\DoxyCodeLine{00533\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a988e65943471dfd665aad425aafa79e1}{RecalcItems}}();}
+\DoxyCodeLine{00534\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a8edcda73cdb920e04e539fc800ca736a}{CalcMaxVisibleDuration}}();}
+\DoxyCodeLine{00535\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_af7658f3f2ce41a88e2913bb09d6c131c}{CalcArrowsState}}();}
+\DoxyCodeLine{00536\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a52cfca00089c603085e4ad3d2db15d96}{TimeChanged}}();}
+\DoxyCodeLine{00537\ }
+\DoxyCodeLine{00538\ \ \ \ \ \textcolor{comment}{//\ Elements}}
+\DoxyCodeLine{00539\ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}\ \mbox{\hyperlink{classwxTimelineCtrl_abf5596f613d2e154add0cceaccbf1a25}{GetElementFromPos}}(\textcolor{keyword}{const}\ wxPoint\&\ pos);}
+\DoxyCodeLine{00540\ \ \ \ \ wxCursor\ \mbox{\hyperlink{classwxTimelineCtrl_a16bc6acda9d5e15bebae5a5de3f8af02}{GetCursorFromType}}(\mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}\ type);}
+\DoxyCodeLine{00541\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a9b2f7e27058fc71d4cb4331450479aac}{ChangeLastElement}}(\mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}\ type);}
+\DoxyCodeLine{00542\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a3dd2cc16194b0b649e7af34feab60b40}{OnMouseDown}}(\mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}\ type,\ \textcolor{keyword}{const}\ wxPoint\&\ pos);}
+\DoxyCodeLine{00543\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_ab8a76551c6eebac6fc6dfcf106d3680a}{OnMouseUp}}(\mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}\ type,\ \textcolor{keyword}{const}\ wxPoint\&\ pos);}
+\DoxyCodeLine{00544\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_abb24170680d08063f8497fc093026354}{OnMouseDrag}}(\mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}\ type,\ \textcolor{keyword}{const}\ wxPoint\&\ pos);}
+\DoxyCodeLine{00545\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a1abfebc3cc4c14be485e6155a0031707}{OnLeaveElement}}(\mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}\ type);}
+\DoxyCodeLine{00546\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_aa8e2823d9c25209378cb0e21907b0c45}{OnEnterElement}}(\mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}\ type);}
+\DoxyCodeLine{00547\ }
+\DoxyCodeLine{00548\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_ab055705b8083d2edf6377347926eaae5}{OnTimelineDown}}(\textcolor{keyword}{const}\ wxPoint\&\ pos,\ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}\ type);}
+\DoxyCodeLine{00549\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a21d9d8f7bcfd72f4ba4efdafb9b1a259}{OnTimelineUp}}(\textcolor{keyword}{const}\ wxPoint\&\ pos,\ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}\ type);}
+\DoxyCodeLine{00550\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a82e72cf5e577fc35c4099da9a58d4d23}{OnTimelineDrag}}(\textcolor{keyword}{const}\ wxPoint\&\ pos,\ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}\ type);}
+\DoxyCodeLine{00551\ }
+\DoxyCodeLine{00552\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a3a868be31b177766222c115310dc9e00}{OnVisibleFrameDown}}(\textcolor{keyword}{const}\ wxPoint\&\ pos,\ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}\ type);}
+\DoxyCodeLine{00553\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a2fc8737488ffe07895e3f3d2d51bf453}{OnVisibleFrameUp}}(\textcolor{keyword}{const}\ wxPoint\&\ pos);}
+\DoxyCodeLine{00554\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a2094ce03cc6c992343e367c1b35561d2}{OnVisibleFrameDrag}}(\textcolor{keyword}{const}\ wxPoint\&\ pos);}
+\DoxyCodeLine{00555\ }
+\DoxyCodeLine{00556\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a92b3e667c2f0b18dbd43cd6bb36f1e5c}{OnScrollerDown}}(\textcolor{keyword}{const}\ wxPoint\&\ pos);}
+\DoxyCodeLine{00557\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a0db777c7821604c71c5840fe7e62d4ca}{OnArrowDown}}(\textcolor{keywordtype}{bool}\ isLeft);}
+\DoxyCodeLine{00558\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a66bf9832644e969c47405cb67e334a76}{OnArrowUp}}(\textcolor{keywordtype}{bool}\ isLeft);}
+\DoxyCodeLine{00559\ }
+\DoxyCodeLine{00560\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_ae670972382230953067991ff3cba64db}{OnTimelineItemMove}}(\textcolor{keyword}{const}\ wxPoint\&\ pos);}
+\DoxyCodeLine{00561\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a50b6e44b0608b3d93faa651109639d97}{OnTimelineItemChangeLeft}}(\textcolor{keyword}{const}\ wxPoint\&\ pos);}
+\DoxyCodeLine{00562\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a0962e72277cca57a846c8289936ac293}{OnTimelineItemChangeRight}}(\textcolor{keyword}{const}\ wxPoint\&\ pos);}
+\DoxyCodeLine{00563\ }
+\DoxyCodeLine{00564\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_ab9396e10e041fe154610fd9bbacb0c28}{ShowContextMenu}}(\textcolor{keyword}{const}\ wxPoint\&\ pos);}
+\DoxyCodeLine{00565\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a9b0e2a00c9bce93a5c4354a508d654dc}{SendItemEvent}}(wxEventType\ evtType,\ \textcolor{keywordtype}{int}\ index);}
+\DoxyCodeLine{00566\ }
+\DoxyCodeLine{00567\ \ \ \ \ \textcolor{keyword}{typename}\ TimelineItemVector::iterator\ \mbox{\hyperlink{classwxTimelineCtrl_a981b93fffe03a7b251ca9ac21f15d483}{FindItem}}(T*\ data)}
+\DoxyCodeLine{00568\ \ \ \ \ \{}
+\DoxyCodeLine{00569\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ it\ =\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.begin();\ it\ !=\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.end();\ ++it)}
+\DoxyCodeLine{00570\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it-\/>Data\ ==\ data)}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ it;}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}}.end();}
+\DoxyCodeLine{00575\ \ \ \ \ \}}
+\DoxyCodeLine{00576\ }
+\DoxyCodeLine{00577\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classwxTimelineCtrl_a467a4783e09c710acb818340884f5312}{AdjustMainViewToScrollerView}}();}
+\DoxyCodeLine{00578\ }
+\DoxyCodeLine{00579\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00580\ \ \ \ \ \mbox{\hyperlink{classTimelineArtProvider}{TimelineArtProvider}}*\ \mbox{\hyperlink{classwxTimelineCtrl_aa1bee3390067dde88050c4de0291413a}{m\_artProvider}};}
+\DoxyCodeLine{00581\ }
+\DoxyCodeLine{00582\ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a0b23a88007252458536a8188035d5e28}{TimelineItemVector}}\ \mbox{\hyperlink{classwxTimelineCtrl_ac039528cb51c2744a7acebb63394ea0d}{m\_items}};}
+\DoxyCodeLine{00583\ }
+\DoxyCodeLine{00584\ \ \ \ \ \textcolor{comment}{//\ Active\ task\ being\ dragged/hovered}}
+\DoxyCodeLine{00585\ \ \ \ \ \textcolor{keyword}{typename}\ TimelineItemVector::iterator\ \mbox{\hyperlink{classwxTimelineCtrl_ae392c852d0ca29a8405dcd17f38d9a84}{m\_activeTask}};}
+\DoxyCodeLine{00586\ \ \ \ \ \textcolor{keyword}{typename}\ TimelineItemVector::iterator\ \mbox{\hyperlink{classwxTimelineCtrl_a3c860f35b524a0b432c31c5828c5a99e}{m\_lastTask}};}
+\DoxyCodeLine{00587\ \ \ \ \ \textcolor{keyword}{typename}\ TimelineItemVector::iterator\ \mbox{\hyperlink{classwxTimelineCtrl_a840b020ed9bc1cbcfb0ca660b3955b9b}{m\_visibleItemBegin}};}
+\DoxyCodeLine{00588\ \ \ \ \ \textcolor{keyword}{typename}\ TimelineItemVector::iterator\ \mbox{\hyperlink{classwxTimelineCtrl_ae693043b1ad59c45cc68d045fd0f2966}{m\_visibleItemEnd}};}
+\DoxyCodeLine{00589\ \ \ \ \ }
+\DoxyCodeLine{00590\ \ \ \ \ \textcolor{comment}{//\ Selected\ items}}
+\DoxyCodeLine{00591\ \ \ \ \ wxVector<size\_t>\ \mbox{\hyperlink{classwxTimelineCtrl_ab717c3cb5f61d6d25fcf7fd026fbb8c4}{m\_selectedItems}};}
+\DoxyCodeLine{00592\ }
+\DoxyCodeLine{00593\ \ \ \ \ wxPoint\ \mbox{\hyperlink{classwxTimelineCtrl_adc52900dbd5757b816f49291864cf30a}{m\_dragStartPos}};}
+\DoxyCodeLine{00594\ \ \ \ \ wxPoint\ \mbox{\hyperlink{classwxTimelineCtrl_aa8d105e524137b145e51af56fda35800}{m\_dragCurrentPos}};}
+\DoxyCodeLine{00595\ \ \ \ \ wxPoint\ \mbox{\hyperlink{classwxTimelineCtrl_afaba41034ff20d93b30b6e79ce2b2767}{m\_ptStartPos}};}
+\DoxyCodeLine{00596\ \ \ \ \ wxPoint\ \mbox{\hyperlink{classwxTimelineCtrl_af51c657fbbe78cda055b593fe24df4bc}{m\_ptEndPos}};}
+\DoxyCodeLine{00597\ \ \ \ \ }
+\DoxyCodeLine{00598\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classwxTimelineCtrl_a0ad1c2c39ebb1ab69495954acf6ffa82}{m\_isSelecting}};}
+\DoxyCodeLine{00599\ \ \ \ \ wxPoint\ \mbox{\hyperlink{classwxTimelineCtrl_a1fabe4d3acb658d1c77fb406196ec694}{m\_selectionStart}};}
+\DoxyCodeLine{00600\ \ \ \ \ wxPoint\ \mbox{\hyperlink{classwxTimelineCtrl_a7ff1983100a95c6dde7f66b0e2086143}{m\_selectionEnd}};}
+\DoxyCodeLine{00601\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_a8d89065c3546ff4bcadec6f1be409c7f}{m\_selectionRect}};}
+\DoxyCodeLine{00602\ \ \ \ \ }
+\DoxyCodeLine{00603\ \ \ \ \ wxString\ \mbox{\hyperlink{classwxTimelineCtrl_adf012497ec1997c79774062e89b662a2}{FormatTime}}(\textcolor{keywordtype}{int}\ seconds)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00604\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00605\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ minutes\ =\ seconds\ /\ 60;}
+\DoxyCodeLine{00606\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ secs\ =\ seconds\ \%\ 60;}
+\DoxyCodeLine{00607\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ wxString::Format(\textcolor{stringliteral}{"{}\%d:\%02d"{}},\ minutes,\ secs);}
+\DoxyCodeLine{00608\ \ \ \ \ \}}
+\DoxyCodeLine{00609\ }
+\DoxyCodeLine{00610\ \ \ \ \ wxBitmap\ \mbox{\hyperlink{classwxTimelineCtrl_a247d8c3444820a8e803b354f5f5efc2e}{m\_buffer}};}
+\DoxyCodeLine{00611\ }
+\DoxyCodeLine{00612\ \ \ \ \ wxTimer\ \mbox{\hyperlink{classwxTimelineCtrl_aa9a726cc55d2db8b7d48b1752bd1bebd}{m\_timerMove}};}
+\DoxyCodeLine{00613\ }
+\DoxyCodeLine{00614\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_ab8b41b650d7410aaa00af8de8898672a}{m\_totalDuration}};}
+\DoxyCodeLine{00615\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_adb4469aa321c0c4efa771427da14365e}{m\_firstVisibleTime}};}
+\DoxyCodeLine{00616\ }
+\DoxyCodeLine{00617\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a7e9129945e66c6ec3ab73c52e19b1dd3}{m\_scrollerFirstVisibleTime}};}
+\DoxyCodeLine{00618\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_aaa531213da111fd8dc2e49f1106b8ba7}{m\_scrollerVisibleDuration}};}
+\DoxyCodeLine{00619\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a5fad18fbf496c8dd1b7923d1545cb48b}{m\_minScrollerVisibleDuration}};}
+\DoxyCodeLine{00620\ }
+\DoxyCodeLine{00621\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a334caea8d3bf893579f8ade2d3e63cc7}{m\_visibleDuration}};}
+\DoxyCodeLine{00622\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a9518fccbc010f4880061245ba2001e6c}{m\_defaultDuration}};}
+\DoxyCodeLine{00623\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_ae113f776623a79e799a03d578e73b578}{m\_totalTime}};}
+\DoxyCodeLine{00624\ }
+\DoxyCodeLine{00625\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a015e8b9e69219070999b49783b7cd43f}{m\_minVisibleDuration}};}
+\DoxyCodeLine{00626\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a383ee7cc897f9bfd907f4e36ec8684a6}{m\_maxVisibleDuration}};}
+\DoxyCodeLine{00627\ }
+\DoxyCodeLine{00628\ \ \ \ \ wxDateTime\ \mbox{\hyperlink{classwxTimelineCtrl_a5782925735e2ef921b36f237ed1b2bfa}{m\_startTime}};}
+\DoxyCodeLine{00629\ }
+\DoxyCodeLine{00630\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_a706d86a998e5b6d20f64133cf3e7159f}{m\_rectBackground}};}
+\DoxyCodeLine{00631\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_a283c997204d5937f6a864a1666d8e821}{m\_rectTimeline}};}
+\DoxyCodeLine{00632\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_a190c2a75c47f5afff6754768c478806f}{m\_rectScroller}};}
+\DoxyCodeLine{00633\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_a741e362ab8237c61a082222b04ef6df4}{m\_rectScrollerTrack}};}
+\DoxyCodeLine{00634\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_a6c0e9b256736dc896cef1e98ce7d82f9}{m\_rectTimelineTrack}};}
+\DoxyCodeLine{00635\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_af519ef8c06a8e20c17dc639b1f34d3fd}{m\_rectVisibleFrame}};}
+\DoxyCodeLine{00636\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_af462996166c747f6ba3ec227eb964bd9}{m\_rectVisibleFrameLeft}},\ \mbox{\hyperlink{classwxTimelineCtrl_abc0ac53780dfba41067ee6ff68545fb5}{m\_rectVisibleFrameRight}};}
+\DoxyCodeLine{00637\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_ab0b28006855c25d4c48e7408e6bb17d6}{m\_rectLeftArrow}},\ \mbox{\hyperlink{classwxTimelineCtrl_a5db7c0890cecc3ddf5e8479020a6edd5}{m\_rectRightArrow}};}
+\DoxyCodeLine{00638\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_a272ff1ccf20954e7ed05852868bb8ba0}{m\_rectLeftArrowDraw}},\ \mbox{\hyperlink{classwxTimelineCtrl_aecb90f453f7276db35830eed0db1ddc2}{m\_rectRightArrowDraw}};}
+\DoxyCodeLine{00639\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_a67cbd8d336f5b9ea10ae36f7b1b6cd0a}{m\_rectTimelineMain}};}
+\DoxyCodeLine{00640\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_acc432f55c46c0fef71dae26b90db128e}{m\_rectScrollerMain}};}
+\DoxyCodeLine{00641\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_a4dd3025c00da2342b50f99de8f90eed2}{m\_rectScrollerTimeScale}};}
+\DoxyCodeLine{00642\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_a7d7d66a02930d4f85f56210659f186af}{m\_rectTimelineTimeScale}};}
+\DoxyCodeLine{00643\ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}\ \mbox{\hyperlink{classwxTimelineCtrl_a5f734e4ac52c66e3f97260af9ab9a3f1}{m\_selectedElement}};}
+\DoxyCodeLine{00644\ \ \ \ \ \mbox{\hyperlink{classwxTimelineCtrl_a1a6b7022db36379d136f25b42f37d211}{ElementType}}\ \mbox{\hyperlink{classwxTimelineCtrl_abcf677fc2954f04c2f6e1cf1e14b6722}{m\_lastElement}};}
+\DoxyCodeLine{00645\ }
+\DoxyCodeLine{00646\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a4d7ef25e3cb625b29196394edcf43515}{m\_colorCounter}};}
+\DoxyCodeLine{00647\ }
+\DoxyCodeLine{00648\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classwxTimelineCtrl_abdbe3853bf5fb6c81768289b41365bba}{m\_mouseCaptured}};}
+\DoxyCodeLine{00649\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classwxTimelineCtrl_a49b4c4155a1bfc1b460974aecb5f5e1b}{m\_mouseDown}};}
+\DoxyCodeLine{00650\ }
+\DoxyCodeLine{00651\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a024126dadbfe6c838245fb09be056bc4}{m\_moveDirection}};}
+\DoxyCodeLine{00652\ }
+\DoxyCodeLine{00653\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a815dd1e25459cb0b0bbefedc858390e6}{m\_dragFirstVisibleTime}};}
+\DoxyCodeLine{00654\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a1eedd0c5048c4e2b43473588d667b12f}{m\_dragVisibleDuration}};}
+\DoxyCodeLine{00655\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a241507e001ef1187e18b84e214524b58}{m\_dragPreviewTime}};}
+\DoxyCodeLine{00656\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classwxTimelineCtrl_a9ce687397244492e6ec69de75e134e5d}{m\_isSnapping}};}
+\DoxyCodeLine{00657\ }
+\DoxyCodeLine{00658\ \ \ \ \ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025}{TimelineElementState}}\ \mbox{\hyperlink{classwxTimelineCtrl_a9932fb241aea9ff5384a4586b1380672}{m\_stateLeftArrow}}\ =\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025a960b44c579bc2f6818d2daaf9e4c16f0}{TimelineElementState::Normal}};}
+\DoxyCodeLine{00659\ \ \ \ \ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025}{TimelineElementState}}\ \mbox{\hyperlink{classwxTimelineCtrl_ac03a53f247063840f1ea62e98db35caa}{m\_stateRightArrow}}\ =\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025a960b44c579bc2f6818d2daaf9e4c16f0}{TimelineElementState::Normal}};}
+\DoxyCodeLine{00660\ \ \ \ \ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025}{TimelineElementState}}\ \mbox{\hyperlink{classwxTimelineCtrl_ad7a9ff45588c203f2bb7dfe2cbb8d2e1}{m\_stateVisibleFrame}}\ =\ \mbox{\hyperlink{TimelineItem_8h_a8a6947a17fec7f26e0539cc362a5c025a960b44c579bc2f6818d2daaf9e4c16f0}{TimelineElementState::Normal}};}
+\DoxyCodeLine{00661\ }
+\DoxyCodeLine{00662\ \ \ \ \ \textcolor{comment}{//\ State\ for\ scroller\ item\ dragging}}
+\DoxyCodeLine{00663\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a239ca1d2fff6f4eb8ee1128ebc2ded63}{m\_hoveredScrollerItemIndex}};}
+\DoxyCodeLine{00664\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a821572e04c1f97d3845c2d90a8c35dc4}{m\_draggedScrollerItemIndex}};}
+\DoxyCodeLine{00665\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a416b34eef11ac725828ca7622db59ed9}{m\_contextMenuItemIndex}};\ }
+\DoxyCodeLine{00666\ }
+\DoxyCodeLine{00667\ \ \ \ \ \textcolor{comment}{//\ Sizing\ constants}}
+\DoxyCodeLine{00668\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_ac066146745a663e38c7ddfc7d6554cac}{m\_ScrollerHeight}}\ =\ 64;}
+\DoxyCodeLine{00669\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a9a4857e7c3e68d970a57d7a466000595}{m\_GapHeight}}\ =\ 7;}
+\DoxyCodeLine{00670\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_ab0d64306bed28e9d9d3677e16791f7e1}{m\_ArrowWidth}}\ =\ 14;}
+\DoxyCodeLine{00671\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a731e485ee0f91394e664df322b42ba4e}{m\_ArrowDrawWidth}}\ =\ 6;}
+\DoxyCodeLine{00672\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a89edcc0918210ff9590994b98baf8f20}{m\_ArrowDrawHeight}}\ =\ 16;}
+\DoxyCodeLine{00673\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_accb149f5df0eea0157387bd68b52a63b}{m\_ScrollerTimeScaleHeight}}\ =\ 28;}
+\DoxyCodeLine{00674\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_ad6fb642fe40831c669f64cf2074f39ba}{m\_TimelineTimeScaleHeight}}\ =\ 18;}
+\DoxyCodeLine{00675\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_aec84ab6cf8dbb8d1132b617eec5337d9}{m\_MinItemSize}}\ =\ 6;}
+\DoxyCodeLine{00676\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a8e79657b4b52a7e814a668c5245c53c4}{m\_TimelineVMargin}}\ =\ 9;}
+\DoxyCodeLine{00677\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_ac40c2c5abeebde6bd49840de95e3af20}{m\_ScrollerVMargin}}\ =\ 3;}
+\DoxyCodeLine{00678\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a5c0f6ad7775cd7378015a2bfc5536a2f}{m\_resizeBorder}}\ =\ 3;}
+\DoxyCodeLine{00679\ }
+\DoxyCodeLine{00680\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classwxTimelineCtrl_ac16b906633111b93b3afd2262b7a27f5}{m\_isDraggingDetachedItem}};\ \ \ \ \ \ }
+\DoxyCodeLine{00681\ \ \ \ \ \mbox{\hyperlink{classTimelineItem}{TimelineItem<T>}}\ \mbox{\hyperlink{classwxTimelineCtrl_a0e4596fb6e746fb840a0b1eec21602e5}{m\_detachedDragItemVisual}};\ }
+\DoxyCodeLine{00682\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_aca0229cde8f099a9228d8f523c7ea766}{m\_detachedDragItemOriginalIndex}};\ }
+\DoxyCodeLine{00683\ \ \ \ \ wxPoint\ \mbox{\hyperlink{classwxTimelineCtrl_a82a957c49c9318b65803a3e0df13d990}{m\_detachedDragItemScreenPos}};\ \ }
+\DoxyCodeLine{00684\ \ \ \ \ wxSize\ \mbox{\hyperlink{classwxTimelineCtrl_a765e318d5d85d92345926a3db048d539}{m\_detachedDragItemSize}};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00685\ }
+\DoxyCodeLine{00686\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classwxTimelineCtrl_aab71353df808cae381648233f291147d}{m\_showOriginalPositionPlaceholder}};}
+\DoxyCodeLine{00687\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_a1fb2c55a82f9cb618cc7ac42ab900749}{m\_originalPositionPlaceholderRectScroller}};\ }
+\DoxyCodeLine{00688\ \ \ \ \ wxColour\ \mbox{\hyperlink{classwxTimelineCtrl_a4564d9568097397bac9a41c300b83342}{m\_originalPositionPlaceholderColour}};\ \ \ \ \ }
+\DoxyCodeLine{00689\ }
+\DoxyCodeLine{00690\ \ \ \ \ wxPoint\ \mbox{\hyperlink{classwxTimelineCtrl_a3a5c82114912c16c43ca0eec70256601}{m\_cursorToDetachedVisualOffset}};\ }
+\DoxyCodeLine{00691\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_a151e72d9e5e852f0fdbe7faee7289cac}{m\_dragScrollerItemInitialClickTimeOffset}};\ }
+\DoxyCodeLine{00692\ }
+\DoxyCodeLine{00693\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classwxTimelineCtrl_a55ffb88f07c3bce9013958cf8ea5c9f7}{m\_isDraggingFloatingItem}};}
+\DoxyCodeLine{00694\ \ \ \ \ \mbox{\hyperlink{classFloatingItemPopupWindow}{FloatingItemPopupWindow<T>}}*\ \mbox{\hyperlink{classwxTimelineCtrl_aaa77230a7786c58705e1ef676a33441d}{m\_pFloatingItemWin}};}
+\DoxyCodeLine{00695\ \ \ \ \ }
+\DoxyCodeLine{00696\ \ \ \ \ \mbox{\hyperlink{classTimelineItem}{TimelineItem<T>}}\ \mbox{\hyperlink{classwxTimelineCtrl_a6ce73deb37b969fe7aefa46416c3970e}{m\_floatingItemVisualData}};}
+\DoxyCodeLine{00697\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_acdcf88e0e25ecdb628e1e7787b9208cf}{m\_floatingItemOriginalIndex}};}
+\DoxyCodeLine{00698\ \ \ \ \ wxSize\ \mbox{\hyperlink{classwxTimelineCtrl_a17f09495b1ea3be38d6305c41b3ded5d}{m\_floatingItemVisualSize}};}
+\DoxyCodeLine{00699\ \ \ \ \ }
+\DoxyCodeLine{00700\ \ \ \ \ wxPoint\ \mbox{\hyperlink{classwxTimelineCtrl_a928ac73b1e8e7fccf86bdc1a32365812}{m\_cursorToFloatingWinOffset}};\ }
+\DoxyCodeLine{00701\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classwxTimelineCtrl_aae9192e6178c51413516e744cca20f55}{m\_clickToItemTimeOffset}};\ }
+\DoxyCodeLine{00702\ }
+\DoxyCodeLine{00703\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classwxTimelineCtrl_ab3679c18aaedc54ae362c484a8de092e}{m\_showDropTargetOnScroller}};\ }
+\DoxyCodeLine{00704\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_a71435ba79314f973f62d2021c17c188e}{m\_dropTargetOnScrollerRect}};}
+\DoxyCodeLine{00705\ }
+\DoxyCodeLine{00706\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_a02deba3678a7f7b5a217cf57fe821042}{m\_dropIndicatorRect}};}
+\DoxyCodeLine{00707\ \ \ \ \ wxRect\ \mbox{\hyperlink{classwxTimelineCtrl_a83615c53362b19ea0ba750ad5462794a}{m\_dropIndicatorRectScroller}};}
+\DoxyCodeLine{00708\ \};}
+\DoxyCodeLine{00709\ }
+\DoxyCodeLine{00710\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{wxTimelineCtrl__impl_8h}{wxTimelineCtrl\_impl.h}}"{}}}
+\DoxyCodeLine{00711\ }
+\DoxyCodeLine{00712\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ \_WX\_TIMELINE\_CTRL\_H}}
+
+\end{DoxyCode}

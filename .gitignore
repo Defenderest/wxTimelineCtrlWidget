@@ -5,8 +5,6 @@ wxTimelineCtrlTest.vcxproj
 wxTimelineCtrlTest.vcxproj.filters
 wxTimelineCtrlTest.vcxproj.user
 
-docs/wxTimelineCtrlWidget/html
-docs/wxTimelineCtrlWidget/latex
 themes/
 
 .aider*

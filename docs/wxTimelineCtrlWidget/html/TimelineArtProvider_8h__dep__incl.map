@@ -1,0 +1,20 @@
+<map id="TimelineArtProvider.h" name="TimelineArtProvider.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="313,5,475,31"/>
+<area shape="rect" id="Node000002" href="$FloatingItemPopupWindow_8h.html" title=" " alt="" coords="219,79,427,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="375,43,337,80,333,77,371,39"/>
+<area shape="rect" id="Node000003" href="$wxTimelineCtrl_8h.html" title=" " alt="" coords="327,152,461,177"/>
+<area shape="poly" id="edge10_Node000001_Node000003" title=" " alt="" coords="418,39,432,57,442,78,443,100,435,121,409,154,405,150,431,118,438,99,437,79,427,60,414,42"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="347,112,384,150,381,154,343,116"/>
+<area shape="rect" id="Node000004" href="$wxTimelineCtrlTestMainFrame_8cpp.html" title=" " alt="" coords="5,299,252,324"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="314,180,220,199,181,212,156,227,144,244,137,263,131,299,126,298,131,262,139,241,152,223,179,208,219,194,313,175"/>
+<area shape="rect" id="Node000005" href="$wxTimelineCtrlTestMainFrame_8h.html" title=" " alt="" coords="166,225,398,251"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="366,187,302,227,299,223,363,183"/>
+<area shape="rect" id="Node000008" href="$wxTimelineCtrl__impl_8h.html" title=" " alt="" coords="423,225,592,251"/>
+<area shape="poly" id="edge8_Node000003_Node000008" title=" " alt="" coords="418,183,483,223,481,227,415,187"/>
+<area shape="poly" id="edge7_Node000005_Node000004" title=" " alt="" coords="246,259,155,301,153,296,244,254"/>
+<area shape="rect" id="Node000006" href="$wxTimelineCtrlApp_8h.html" title=" " alt="" coords="276,299,435,324"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="306,258,345,297,342,300,302,262"/>
+<area shape="rect" id="Node000007" href="$wxTimelineCtrlApp_8cpp.html" title=" " alt="" coords="269,372,442,397"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="358,338,358,372,353,372,353,338"/>
+<area shape="poly" id="edge9_Node000008_Node000003" title=" " alt="" coords="483,220,418,180,420,175,486,215"/>
+</map>
