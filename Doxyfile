@@ -56,7 +56,7 @@ PROJECT_NUMBER         =
 
 PROJECT_BRIEF          =
 
-# With the PROJECT_LOGO tag one can specify a logo or an icon that is included
+# With the PROJECT_LOGO tag one can specify a logo or an icon that is includedOUTPUT_DIRECTORY
 # in the documentation. The maximum height of the logo should not exceed 55
 # pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
 # the logo to the output directory.
