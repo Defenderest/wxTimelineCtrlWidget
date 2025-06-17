@@ -1,0 +1,43 @@
+.vscode/
+wxTimelineCtrlTestMainFrame
+wxTimelineCtrlTest.sln
+wxTimelineCtrlTest.vcxproj
+wxTimelineCtrlTest.vcxproj.filters
+wxTimelineCtrlTest.vcxproj.user
+
+.aider*
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.vcxproj.user # Часто специфичен для пользователя, если нет общей конфигурации
+*.log
+*.[Oo]
+*.obj
+*.ilk
+*.pdb
+*.exp
+*.lib
+*.dll
+*.exe
+*.manifest
+*.res
+*.pch
+*.tlog
+*_i.c
+*_p.c
+*_h.h
+
+# Build Folders
+[Bb]in/
+[Dd]ebug/
+[Rr]elease/
+x64/
+Win32/
+ARM/
+ARM64/
+ipch/
+.aps/
+
+# Custom temp folders (если нужно, добавьте wxTimeli.f1f21bcd/)
+# wxTimeli.f1f21bcd/
