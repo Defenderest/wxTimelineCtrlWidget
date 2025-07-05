@@ -3,6 +3,9 @@ name: Generate and Deploy Doxygen Docs
 on:
   push:
     branches: [main]
+    
+permissions:
+  contents: write 
 
 jobs:
   build:
