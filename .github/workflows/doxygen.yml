@@ -22,6 +22,9 @@ jobs:
 
       - name: Generate Doxygen documentation
         run: doxygen Doxyfile
+        
+      - name: Add .nojekyll
+        run: touch ./docs/html/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
