@@ -17,9 +17,6 @@ jobs:
       - name: Install Doxygen
         run: sudo apt-get update && sudo apt-get install -y doxygen
 
-      - name: Create docs folder
-        run: mkdir -p ./docs
-
       - name: Generate Doxygen documentation
         run: doxygen Doxyfile
         
