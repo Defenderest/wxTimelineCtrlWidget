@@ -15,7 +15,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Doxygen
-        run: sudo apt-get update && sudo apt-get install -y doxygen
+        run: sudo apt-get update && sudo apt-get install -y doxygen git
+        
+      - name: Clone theme files
+        run: git clone https://github.com/jothepro/doxygen-awesome-css.git themes/doxygen-awesome-css
 
       - name: Generate Doxygen documentation
         run: doxygen Doxyfile
