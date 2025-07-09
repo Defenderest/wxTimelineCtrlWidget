@@ -1,0 +1,82 @@
+name: macOS Build
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Install dependencies
+      run: |
+        brew install wxwidgets cmake
+    
+    - name: Set WXWIN environment variable
+      run: |
+        echo "WXWIN=$(brew --prefix wxwidgets)" >> $GITHUB_ENV
+    
+    - name: Build project (macOS)
+      run: |
+        cd build
+        mkdir -p generated
+        cd generated
+        cmake -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} ..
+        make -j$(sysctl -n hw.ncpu)
+    
+    - name: Test executable (macOS)
+      run: |
+        # Check multiple possible locations for the executable
+        echo "Searching for executable..."
+        find build -name "wxTimelineCtrlTest*" -type f 2>/dev/null || echo "No files found with find"
+        
+        # List contents of build directory
+        echo "Contents of build/generated:"
+        ls -la build/generated/ || echo "build/generated directory not found"
+        
+        # Check common locations
+        possible_paths=(
+          "build/generated/wxTimelineCtrlTest"
+          "build/generated/app/wxTimelineCtrlTest"
+          "build/generated/${{ matrix.configuration }}/wxTimelineCtrlTest"
+          "build/generated/Debug/wxTimelineCtrlTest"
+          "build/generated/Release/wxTimelineCtrlTest"
+        )
+        
+        executable_found=false
+        for path in "${possible_paths[@]}"; do
+          if [ -f "$path" ]; then
+            echo "[OK] Executable found: $path"
+            ls -lh "$path"
+            executable_found=true
+            break
+          fi
+        done
+        
+        if [ "$executable_found" = false ]; then
+          echo "[ERROR] Executable not found in any expected location"
+          echo "Full directory structure:"
+          find build -type f -name "*" 2>/dev/null || echo "Find command failed"
+          exit 1
+        fi
+    
+    - name: Upload macOS artifacts
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: wxTimelineCtrl-macOS-${{ matrix.configuration }}
+        path: |
+          build/generated/**/wxTimelineCtrlTest
+        retention-days: 30

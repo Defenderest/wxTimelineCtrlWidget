@@ -536,6 +536,26 @@ This checks:
 
 This project is provided as-is for educational and development purposes. Please refer to the individual source files for specific licensing terms.
 
+## 💖 Support Open Source Development
+
+If you find this wxWidgets component helpful and would like to support the development of open source wxWidgets libraries and components, consider making a donation. Your support helps maintain and improve this project, and enables the creation of more high-quality wxWidgets tools for the community.
+
+### Why Support?
+
+- 🚀 **Accelerate Development**: Your donations help dedicate more time to improving existing features and adding new ones
+- 🐛 **Better Bug Fixes**: Support enables faster response to issues and more thorough testing
+- 📚 **Enhanced Documentation**: Contributions help create better examples, tutorials, and API documentation
+- 🌟 **New Components**: Support the creation of additional wxWidgets controls and libraries
+- ❤️ **Say Thank You**: A simple way to show appreciation for the time and effort put into open source development
+
+### Donate via PayPal
+
+[![Donate with PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=KCVPYB54QAQDC)
+
+**Every contribution, no matter how small, is greatly appreciated and helps keep this project alive and growing!**
+
+*Thank you for using wxTimelineCtrl and for supporting open source wxWidgets development!* 🙏
+
 ---
 
 **Happy coding!** 🚀

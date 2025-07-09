@@ -1,0 +1,458 @@
+name: Windows Build
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build-windows-debug:
+    name: Windows Debug
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+    
+    - name: Setup CMake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '3.28.1'
+    
+    - name: Cache wxWidgets
+      id: cache-wxwidgets
+      uses: actions/cache@v4
+      with:
+        path: |
+          D:\wxWidgets
+        key: ${{ runner.os }}-wxwidgets-precompiled-3.3.0-x64
+        restore-keys: |
+          ${{ runner.os }}-wxwidgets-precompiled-3.3.0-
+          ${{ runner.os }}-wxwidgets-precompiled-
+          ${{ runner.os }}-wxwidgets-
+    
+    - name: Download and extract wxWidgets
+      if: steps.cache-wxwidgets.outputs.cache-hit != 'true'
+      run: |
+        # Download pre-compiled wxWidgets for Windows (more reliable than source)
+        Write-Host "Downloading pre-compiled wxWidgets..."
+        
+        # Try wxWidgets 3.3.0 pre-compiled version first
+        try {
+          Write-Host "Downloading wxWidgets 3.3.0 Dev libraries..."
+          Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.0/wxMSW-3.3.0_vc14x_x64_Dev.7z" -OutFile "wxWidgets-dev.7z" -TimeoutSec 300
+          
+          Write-Host "Downloading wxWidgets 3.3.0 Headers..."
+          Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.0/wxWidgets-3.3.0-headers.7z" -OutFile "wxWidgets-headers.7z" -TimeoutSec 300
+          
+          $wxVersion = "3.3.0"
+          $downloadSuccess = $true
+        } catch {
+          Write-Host "wxWidgets 3.3.0 download failed: $($_.Exception.Message)"
+          Write-Host "Trying wxWidgets 3.2.4 pre-compiled..."
+          try {
+            Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxMSW-3.2.4_vc14x_x64_Dev.7z" -OutFile "wxWidgets-dev.7z" -TimeoutSec 300
+            Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4-headers.7z" -OutFile "wxWidgets-headers.7z" -TimeoutSec 300
+            
+            $wxVersion = "3.2.4"
+            $downloadSuccess = $true
+          } catch {
+            Write-Host "ERROR: Failed to download pre-compiled wxWidgets: $($_.Exception.Message)"
+            exit 1
+          }
+        }
+        
+        # Verify downloads
+        if (-not (Test-Path "wxWidgets-dev.7z")) {
+          Write-Host "ERROR: Dev archive not found"
+          exit 1
+        }
+        if (-not (Test-Path "wxWidgets-headers.7z")) {
+          Write-Host "ERROR: Headers archive not found"
+          exit 1
+        }
+        
+        $devSize = (Get-Item "wxWidgets-dev.7z").Length
+        $headersSize = (Get-Item "wxWidgets-headers.7z").Length
+        Write-Host "Downloaded wxWidgets ${wxVersion}:"
+        Write-Host "  Dev archive: $([math]::Round($devSize/1MB, 2)) MB"
+        Write-Host "  Headers archive: $([math]::Round($headersSize/1MB, 2)) MB"
+        
+        # Clean up any existing directories
+        Remove-Item -Path "D:\wxWidgets" -Recurse -Force -ErrorAction SilentlyContinue
+        
+        # Extract wxWidgets using 7-Zip (required for .7z files)
+        Write-Host "Extracting wxWidgets using 7-Zip..."
+        
+        # Find 7-Zip installation
+        $sevenZipPath = "C:\Program Files\7-Zip\7z.exe"
+        if (-not (Test-Path $sevenZipPath)) {
+          # Try alternative locations
+          $sevenZipPath = "C:\ProgramData\chocolatey\bin\7z.exe"
+          if (-not (Test-Path $sevenZipPath)) {
+            # Try to find 7z in PATH
+            $sevenZipPath = (Get-Command 7z -ErrorAction SilentlyContinue).Source
+            if (-not $sevenZipPath) {
+              Write-Host "ERROR: 7-Zip not found. 7-Zip is required to extract .7z files."
+              Write-Host "Please install 7-Zip or ensure it's in the PATH."
+              exit 1
+            }
+          }
+        }
+        
+        # Extract Dev archive (contains lib and build folders)
+        Write-Host "Using 7-Zip at: $sevenZipPath"
+        Write-Host "Extracting Dev libraries..."
+        try {
+          $extractResult = & "$sevenZipPath" x "wxWidgets-dev.7z" "-oD:\wxWidgets" -y 2>&1
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Dev archive extraction successful"
+          } else {
+            Write-Host "Dev archive extraction failed with exit code: $LASTEXITCODE"
+            Write-Host "7-Zip output: $extractResult"
+            exit 1
+          }
+        } catch {
+          Write-Host "ERROR: Dev archive extraction failed: $($_.Exception.Message)"
+          exit 1
+        }
+        
+        # Extract Headers archive (contains include folder)
+        Write-Host "Extracting Headers..."
+        try {
+          $extractResult = & "$sevenZipPath" x "wxWidgets-headers.7z" "-oD:\wxWidgets" -y 2>&1
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Headers archive extraction successful"
+          } else {
+            Write-Host "Headers archive extraction failed with exit code: $LASTEXITCODE"
+            Write-Host "7-Zip output: $extractResult"
+            exit 1
+          }
+        } catch {
+          Write-Host "ERROR: Headers archive extraction failed: $($_.Exception.Message)"
+          exit 1
+        }
+        
+        # Clean up 7z files
+        Remove-Item -Path "wxWidgets-dev.7z" -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "wxWidgets-headers.7z" -Force -ErrorAction SilentlyContinue
+        
+        # Verify wxWidgets directory exists and has content
+        if (-not (Test-Path "D:\wxWidgets")) {
+            Write-Host "ERROR: wxWidgets directory not found at D:\wxWidgets"
+            exit 1
+        }
+        
+        # Show extracted contents
+        Write-Host "Extracted wxWidgets contents:"
+        Get-ChildItem -Path "D:\wxWidgets" -Directory | Select-Object Name | Format-Table -AutoSize
+        
+        # Verify critical directories exist
+        $criticalDirs = @("include", "lib")
+        foreach ($dir in $criticalDirs) {
+          $dirPath = "D:\wxWidgets\$dir"
+          if (Test-Path $dirPath) {
+            Write-Host "[OK] Found $dir directory" -ForegroundColor Green
+            $itemCount = (Get-ChildItem -Path $dirPath -Recurse | Measure-Object).Count
+            Write-Host "  Contains $itemCount items" -ForegroundColor Cyan
+          } else {
+            Write-Host "[ERROR] Missing $dir directory" -ForegroundColor Red
+            exit 1
+          }
+        }
+        
+        # Check for wx.h specifically
+        $wxHeaderPath = "D:\wxWidgets\include\wx\wx.h"
+        if (Test-Path $wxHeaderPath) {
+          Write-Host "[OK] Found wx.h header file" -ForegroundColor Green
+        } else {
+          Write-Host "[ERROR] wx.h header file not found at $wxHeaderPath" -ForegroundColor Red
+          Write-Host "Available include subdirectories:"
+          Get-ChildItem -Path "D:\wxWidgets\include" -Directory -ErrorAction SilentlyContinue | Select-Object Name | Format-Table -AutoSize
+          exit 1
+        }
+        
+        $wxFiles = Get-ChildItem -Path "D:\wxWidgets" -File | Measure-Object
+        Write-Host "wxWidgets directory contains $($wxFiles.Count) files total"
+        
+        # Pre-compiled binaries with headers are ready to use!
+        Write-Host "[SUCCESS] Pre-compiled wxWidgets with headers is ready to use!" -ForegroundColor Green
+      shell: powershell
+    
+    - name: Set WXWIN environment variable
+      run: |
+        echo "WXWIN=D:\wxWidgets" >> $env:GITHUB_ENV
+      shell: powershell
+    
+    - name: Verify setup
+      run: |
+        cd build
+        .\verify_setup.bat
+      shell: cmd
+    
+    - name: Build project (Debug)
+      run: |
+        cd build
+        .\build.bat Debug
+      shell: cmd
+    
+    - name: Test executable (Debug)
+      run: |
+        $exePath = "build\generated\Debug\wxTimelineCtrlTest.exe"
+        if (Test-Path $exePath) {
+          Write-Host "[OK] Debug executable built successfully: $exePath" -ForegroundColor Green
+          $fileInfo = Get-Item $exePath
+          Write-Host "File size: $([math]::Round($fileInfo.Length/1KB, 2)) KB" -ForegroundColor Cyan
+        } else {
+          Write-Host "[ERROR] Debug executable not found: $exePath" -ForegroundColor Red
+          exit 1
+        }
+      shell: powershell
+    
+    - name: Upload Debug artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: wxTimelineCtrl-Windows-Debug-x64
+        path: |
+          build/generated/Debug/wxTimelineCtrlTest.exe
+          build/generated/Debug/wxTimelineCtrlTest.pdb
+        retention-days: 30
+
+  build-windows-release:
+    name: Windows Release
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+    
+    - name: Setup CMake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '3.28.1'
+    
+    - name: Cache wxWidgets
+      id: cache-wxwidgets
+      uses: actions/cache@v4
+      with:
+        path: |
+          D:\wxWidgets
+        key: ${{ runner.os }}-wxwidgets-precompiled-3.3.0-x64
+        restore-keys: |
+          ${{ runner.os }}-wxwidgets-precompiled-3.3.0-
+          ${{ runner.os }}-wxwidgets-precompiled-
+          ${{ runner.os }}-wxwidgets-
+    
+    - name: Download and extract wxWidgets
+      if: steps.cache-wxwidgets.outputs.cache-hit != 'true'
+      run: |
+        # Download pre-compiled wxWidgets for Windows (more reliable than source)
+        Write-Host "Downloading pre-compiled wxWidgets..."
+        
+        # Try wxWidgets 3.3.0 pre-compiled version first
+        try {
+          Write-Host "Downloading wxWidgets 3.3.0 Dev libraries..."
+          Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.0/wxMSW-3.3.0_vc14x_x64_Dev.7z" -OutFile "wxWidgets-dev.7z" -TimeoutSec 300
+          
+          Write-Host "Downloading wxWidgets 3.3.0 Headers..."
+          Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.0/wxWidgets-3.3.0-headers.7z" -OutFile "wxWidgets-headers.7z" -TimeoutSec 300
+          
+          $wxVersion = "3.3.0"
+          $downloadSuccess = $true
+        } catch {
+          Write-Host "wxWidgets 3.3.0 download failed: $($_.Exception.Message)"
+          Write-Host "Trying wxWidgets 3.2.4 pre-compiled..."
+          try {
+            Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxMSW-3.2.4_vc14x_x64_Dev.7z" -OutFile "wxWidgets-dev.7z" -TimeoutSec 300
+            Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4-headers.7z" -OutFile "wxWidgets-headers.7z" -TimeoutSec 300
+            
+            $wxVersion = "3.2.4"
+            $downloadSuccess = $true
+          } catch {
+            Write-Host "ERROR: Failed to download pre-compiled wxWidgets: $($_.Exception.Message)"
+            exit 1
+          }
+        }
+        
+        # Verify downloads
+        if (-not (Test-Path "wxWidgets-dev.7z")) {
+          Write-Host "ERROR: Dev archive not found"
+          exit 1
+        }
+        if (-not (Test-Path "wxWidgets-headers.7z")) {
+          Write-Host "ERROR: Headers archive not found"
+          exit 1
+        }
+        
+        $devSize = (Get-Item "wxWidgets-dev.7z").Length
+        $headersSize = (Get-Item "wxWidgets-headers.7z").Length
+        Write-Host "Downloaded wxWidgets ${wxVersion}:"
+        Write-Host "  Dev archive: $([math]::Round($devSize/1MB, 2)) MB"
+        Write-Host "  Headers archive: $([math]::Round($headersSize/1MB, 2)) MB"
+        
+        # Clean up any existing directories
+        Remove-Item -Path "D:\wxWidgets" -Recurse -Force -ErrorAction SilentlyContinue
+        
+        # Extract wxWidgets using 7-Zip (required for .7z files)
+        Write-Host "Extracting wxWidgets using 7-Zip..."
+        
+        # Find 7-Zip installation
+        $sevenZipPath = "C:\Program Files\7-Zip\7z.exe"
+        if (-not (Test-Path $sevenZipPath)) {
+          # Try alternative locations
+          $sevenZipPath = "C:\ProgramData\chocolatey\bin\7z.exe"
+          if (-not (Test-Path $sevenZipPath)) {
+            # Try to find 7z in PATH
+            $sevenZipPath = (Get-Command 7z -ErrorAction SilentlyContinue).Source
+            if (-not $sevenZipPath) {
+              Write-Host "ERROR: 7-Zip not found. 7-Zip is required to extract .7z files."
+              Write-Host "Please install 7-Zip or ensure it's in the PATH."
+              exit 1
+            }
+          }
+        }
+        
+        # Extract Dev archive (contains lib and build folders)
+        Write-Host "Using 7-Zip at: $sevenZipPath"
+        Write-Host "Extracting Dev libraries..."
+        try {
+          $extractResult = & "$sevenZipPath" x "wxWidgets-dev.7z" "-oD:\wxWidgets" -y 2>&1
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Dev archive extraction successful"
+          } else {
+            Write-Host "Dev archive extraction failed with exit code: $LASTEXITCODE"
+            Write-Host "7-Zip output: $extractResult"
+            exit 1
+          }
+        } catch {
+          Write-Host "ERROR: Dev archive extraction failed: $($_.Exception.Message)"
+          exit 1
+        }
+        
+        # Extract Headers archive (contains include folder)
+        Write-Host "Extracting Headers..."
+        try {
+          $extractResult = & "$sevenZipPath" x "wxWidgets-headers.7z" "-oD:\wxWidgets" -y 2>&1
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Headers archive extraction successful"
+          } else {
+            Write-Host "Headers archive extraction failed with exit code: $LASTEXITCODE"
+            Write-Host "7-Zip output: $extractResult"
+            exit 1
+          }
+        } catch {
+          Write-Host "ERROR: Headers archive extraction failed: $($_.Exception.Message)"
+          exit 1
+        }
+        
+        # Clean up 7z files
+        Remove-Item -Path "wxWidgets-dev.7z" -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "wxWidgets-headers.7z" -Force -ErrorAction SilentlyContinue
+        
+        # Verify wxWidgets directory exists and has content
+        if (-not (Test-Path "D:\wxWidgets")) {
+            Write-Host "ERROR: wxWidgets directory not found at D:\wxWidgets"
+            exit 1
+        }
+        
+        # Show extracted contents
+        Write-Host "Extracted wxWidgets contents:"
+        Get-ChildItem -Path "D:\wxWidgets" -Directory | Select-Object Name | Format-Table -AutoSize
+        
+        # Verify critical directories exist
+        $criticalDirs = @("include", "lib")
+        foreach ($dir in $criticalDirs) {
+          $dirPath = "D:\wxWidgets\$dir"
+          if (Test-Path $dirPath) {
+            Write-Host "[OK] Found $dir directory" -ForegroundColor Green
+            $itemCount = (Get-ChildItem -Path $dirPath -Recurse | Measure-Object).Count
+            Write-Host "  Contains $itemCount items" -ForegroundColor Cyan
+          } else {
+            Write-Host "[ERROR] Missing $dir directory" -ForegroundColor Red
+            exit 1
+          }
+        }
+        
+        # Check for wx.h specifically
+        $wxHeaderPath = "D:\wxWidgets\include\wx\wx.h"
+        if (Test-Path $wxHeaderPath) {
+          Write-Host "[OK] Found wx.h header file" -ForegroundColor Green
+        } else {
+          Write-Host "[ERROR] wx.h header file not found at $wxHeaderPath" -ForegroundColor Red
+          Write-Host "Available include subdirectories:"
+          Get-ChildItem -Path "D:\wxWidgets\include" -Directory -ErrorAction SilentlyContinue | Select-Object Name | Format-Table -AutoSize
+          exit 1
+        }
+        
+        $wxFiles = Get-ChildItem -Path "D:\wxWidgets" -File | Measure-Object
+        Write-Host "wxWidgets directory contains $($wxFiles.Count) files total"
+        
+        # Pre-compiled binaries with headers are ready to use!
+        Write-Host "[SUCCESS] Pre-compiled wxWidgets with headers is ready to use!" -ForegroundColor Green
+      shell: powershell
+    
+    - name: Set WXWIN environment variable
+      run: |
+        echo "WXWIN=D:\wxWidgets" >> $env:GITHUB_ENV
+      shell: powershell
+    
+    - name: Verify setup
+      run: |
+        cd build
+        .\verify_setup.bat
+      shell: cmd
+    
+    - name: Build project (Release)
+      run: |
+        cd build
+        .\build.bat Release
+      shell: cmd
+    
+    - name: Test executable (Release)
+      run: |
+        $exePath = "build\generated\Release\wxTimelineCtrlTest.exe"
+        if (Test-Path $exePath) {
+          Write-Host "[OK] Release executable built successfully: $exePath" -ForegroundColor Green
+          $fileInfo = Get-Item $exePath
+          Write-Host "File size: $([math]::Round($fileInfo.Length/1KB, 2)) KB" -ForegroundColor Cyan
+        } else {
+          Write-Host "[ERROR] Release executable not found: $exePath" -ForegroundColor Red
+          exit 1
+        }
+      shell: powershell
+    
+    - name: Upload Release artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: wxTimelineCtrl-Windows-Release-x64
+        path: |
+          build/generated/Release/wxTimelineCtrlTest.exe
+          build/generated/Release/wxTimelineCtrlTest.pdb
+        retention-days: 30
+
+  upload-logs-on-failure:
+    name: Upload Windows Logs
+    runs-on: windows-latest
+    if: failure()
+    needs: [build-windows-debug, build-windows-release]
+    
+    steps:
+    - name: Upload build logs
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-build-logs
+        path: |
+          build/generated/**/*.log
+          build/generated/**/CMakeFiles/*.log
+        retention-days: 7
