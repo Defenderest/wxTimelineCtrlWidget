@@ -84,53 +84,64 @@ jobs:
         # Create temp directory
         New-Item -ItemType Directory -Path "D:\temp" -Force
         
-        # Extract wxWidgets using multiple methods for reliability
-        Write-Host "Extracting wxWidgets..."
-        $extractionSuccess = $false
+        # Extract wxWidgets using 7-Zip (most reliable for Windows)
+        Write-Host "Extracting wxWidgets using 7-Zip..."
         
-        # Method 1: Try PowerShell Expand-Archive (most compatible)
-        Write-Host "Trying PowerShell Expand-Archive..."
-        try {
-          Expand-Archive -Path "wxWidgets.zip" -DestinationPath "D:\temp" -Force
-          $extractionSuccess = $true
-          Write-Host "PowerShell extraction successful"
-        } catch {
-          Write-Host "PowerShell extraction failed: $($_.Exception.Message)"
+        # Check if 7-Zip is available
+        $sevenZipPath = "C:\Program Files\7-Zip\7z.exe"
+        if (-not (Test-Path $sevenZipPath)) {
+          # Try alternative locations
+          $sevenZipPath = "C:\ProgramData\chocolatey\bin\7z.exe"
+          if (-not (Test-Path $sevenZipPath)) {
+            # Try to find 7z in PATH
+            $sevenZipPath = (Get-Command 7z -ErrorAction SilentlyContinue).Source
+            if (-not $sevenZipPath) {
+              Write-Host "7-Zip not found, trying PowerShell extraction..."
+              try {
+                Expand-Archive -Path "wxWidgets.zip" -DestinationPath "D:\temp" -Force
+                Write-Host "PowerShell extraction successful"
+              } catch {
+                Write-Host "ERROR: PowerShell extraction failed: $($_.Exception.Message)"
+                exit 1
+              }
+            }
+          }
         }
         
-        # Method 2: Try Windows tar command if PowerShell failed
-        if (-not $extractionSuccess) {
-          Write-Host "Trying Windows tar command..."
+        # Extract using 7-Zip if available
+        if ($sevenZipPath -and (Test-Path $sevenZipPath)) {
+          Write-Host "Using 7-Zip at: $sevenZipPath"
           try {
-            $tarResult = & tar -xf "wxWidgets.zip" -C "D:\temp" 2>&1
+            $extractResult = & "$sevenZipPath" x "wxWidgets.zip" "-oD:\temp" -y 2>&1
             if ($LASTEXITCODE -eq 0) {
-              $extractionSuccess = $true
-              Write-Host "tar extraction successful"
+              Write-Host "7-Zip extraction successful"
             } else {
-              Write-Host "tar command failed with exit code: $LASTEXITCODE"
-              Write-Host "tar output: $tarResult"
+              Write-Host "7-Zip extraction failed with exit code: $LASTEXITCODE"
+              Write-Host "7-Zip output: $extractResult"
+              
+              # Fallback to PowerShell
+              Write-Host "Trying PowerShell extraction as fallback..."
+              try {
+                Expand-Archive -Path "wxWidgets.zip" -DestinationPath "D:\temp" -Force
+                Write-Host "PowerShell extraction successful"
+              } catch {
+                Write-Host "ERROR: PowerShell extraction also failed: $($_.Exception.Message)"
+                exit 1
+              }
             }
           } catch {
-            Write-Host "tar extraction failed: $($_.Exception.Message)"
+            Write-Host "ERROR: 7-Zip extraction failed: $($_.Exception.Message)"
+            
+            # Fallback to PowerShell
+            Write-Host "Trying PowerShell extraction as fallback..."
+            try {
+              Expand-Archive -Path "wxWidgets.zip" -DestinationPath "D:\temp" -Force
+              Write-Host "PowerShell extraction successful"
+            } catch {
+              Write-Host "ERROR: PowerShell extraction also failed: $($_.Exception.Message)"
+              exit 1
+            }
           }
-        }
-        
-        # Method 3: Try .NET extraction as last resort
-        if (-not $extractionSuccess) {
-          Write-Host "Trying .NET ZipFile extraction..."
-          try {
-            Add-Type -AssemblyName System.IO.Compression.FileSystem
-            [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD\wxWidgets.zip", "D:\temp")
-            $extractionSuccess = $true
-            Write-Host ".NET extraction successful"
-          } catch {
-            Write-Host ".NET extraction failed: $($_.Exception.Message)"
-          }
-        }
-        
-        if (-not $extractionSuccess) {
-          Write-Host "ERROR: All extraction methods failed"
-          exit 1
         }
         
         # Check what was extracted
@@ -140,13 +151,39 @@ jobs:
           exit 1
         }
         
+        # Show all extracted contents for debugging
+        Write-Host "All extracted items:"
+        Get-ChildItem -Path "D:\temp" -Recurse | Select-Object Name, FullName, PSIsContainer | Format-Table -AutoSize
+        
+        # Get directories only
         $extractedItems = Get-ChildItem -Path "D:\temp" -Directory
         Write-Host "Extracted directories: $($extractedItems.Name -join ', ')"
         
-        # Find the wxWidgets directory (it might be wxWidgets-3.2.4 or just wxWidgets)
-        $wxDir = $extractedItems | Where-Object { $_.Name -like "wxWidgets*" } | Select-Object -First 1
+        # Find the wxWidgets directory with multiple possible patterns
+        $wxDir = $null
+        $possiblePatterns = @("wxWidgets*", "wxwidgets*", "*wxWidgets*", "*wx*")
+        
+        foreach ($pattern in $possiblePatterns) {
+          $wxDir = $extractedItems | Where-Object { $_.Name -like $pattern } | Select-Object -First 1
+          if ($wxDir) {
+            Write-Host "Found wxWidgets directory with pattern '$pattern': $($wxDir.Name)"
+            break
+          }
+        }
+        
+        # If no directory found, try to find any directory that contains CMakeLists.txt or configure files
+        if (-not $wxDir) {
+          Write-Host "No wxWidgets directory found by name, checking for CMakeLists.txt..."
+          foreach ($dir in $extractedItems) {
+            if ((Test-Path "$($dir.FullName)\CMakeLists.txt") -or (Test-Path "$($dir.FullName)\configure")) {
+              $wxDir = $dir
+              Write-Host "Found wxWidgets directory by CMakeLists.txt: $($wxDir.Name)"
+              break
+            }
+          }
+        }
+        
         if ($wxDir) {
-            Write-Host "Found wxWidgets directory: $($wxDir.Name)"
             Write-Host "Moving $($wxDir.FullName) to D:\wxWidgets"
             try {
               Move-Item -Path $wxDir.FullName -Destination "D:\wxWidgets" -Force
@@ -158,6 +195,8 @@ jobs:
             Write-Host "ERROR: Could not find wxWidgets directory in extracted files"
             Write-Host "Available directories:"
             Get-ChildItem -Path "D:\temp" -Recurse -Directory | Select-Object Name, FullName | Format-Table
+            Write-Host "Files in root:"
+            Get-ChildItem -Path "D:\temp" -File | Select-Object Name, FullName | Format-Table
             exit 1
         }
         
