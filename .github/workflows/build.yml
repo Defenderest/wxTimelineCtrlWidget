@@ -44,23 +44,38 @@ jobs:
     - name: Download and build wxWidgets
       if: steps.cache-wxwidgets.outputs.cache-hit != 'true'
       run: |
-        # Download wxWidgets
+        # Download wxWidgets (try stable 3.2.3 first, then 3.2.4)
         Write-Host "Downloading wxWidgets..."
+        $downloadSuccess = $false
+        $wxVersion = ""
+        
+        # Try wxWidgets 3.2.3 first (more stable)
         try {
-          Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4.zip" -OutFile "wxWidgets-3.2.4.zip" -TimeoutSec 300
+          Write-Host "Trying wxWidgets 3.2.3..."
+          Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.3/wxWidgets-3.2.3.zip" -OutFile "wxWidgets.zip" -TimeoutSec 300
+          $wxVersion = "3.2.3"
+          $downloadSuccess = $true
         } catch {
-          Write-Host "ERROR: Failed to download wxWidgets: $($_.Exception.Message)"
-          exit 1
+          Write-Host "wxWidgets 3.2.3 download failed: $($_.Exception.Message)"
+          Write-Host "Trying wxWidgets 3.2.4..."
+          try {
+            Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4.zip" -OutFile "wxWidgets.zip" -TimeoutSec 300
+            $wxVersion = "3.2.4"
+            $downloadSuccess = $true
+          } catch {
+            Write-Host "ERROR: Failed to download wxWidgets: $($_.Exception.Message)"
+            exit 1
+          }
         }
         
         # Verify download
-        if (-not (Test-Path "wxWidgets-3.2.4.zip")) {
+        if (-not (Test-Path "wxWidgets.zip")) {
           Write-Host "ERROR: Downloaded file not found"
           exit 1
         }
         
-        $fileSize = (Get-Item "wxWidgets-3.2.4.zip").Length
-        Write-Host "Downloaded file size: $([math]::Round($fileSize/1MB, 2)) MB"
+        $fileSize = (Get-Item "wxWidgets.zip").Length
+        Write-Host "Downloaded wxWidgets $wxVersion, file size: $([math]::Round($fileSize/1MB, 2)) MB"
         
         # Clean up any existing directories
         Remove-Item -Path "D:\temp" -Recurse -Force -ErrorAction SilentlyContinue
@@ -69,20 +84,53 @@ jobs:
         # Create temp directory
         New-Item -ItemType Directory -Path "D:\temp" -Force
         
-        # Extract wxWidgets with better error handling
+        # Extract wxWidgets using multiple methods for reliability
         Write-Host "Extracting wxWidgets..."
+        $extractionSuccess = $false
+        
+        # Method 1: Try PowerShell Expand-Archive (most compatible)
+        Write-Host "Trying PowerShell Expand-Archive..."
         try {
-          Add-Type -AssemblyName System.IO.Compression.FileSystem
-          [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD\wxWidgets-3.2.4.zip", "D:\temp")
+          Expand-Archive -Path "wxWidgets.zip" -DestinationPath "D:\temp" -Force
+          $extractionSuccess = $true
+          Write-Host "PowerShell extraction successful"
         } catch {
-          Write-Host "ERROR: Failed to extract wxWidgets: $($_.Exception.Message)"
-          Write-Host "Trying alternative extraction method..."
+          Write-Host "PowerShell extraction failed: $($_.Exception.Message)"
+        }
+        
+        # Method 2: Try Windows tar command if PowerShell failed
+        if (-not $extractionSuccess) {
+          Write-Host "Trying Windows tar command..."
           try {
-            Expand-Archive -Path "wxWidgets-3.2.4.zip" -DestinationPath "D:\temp" -Force
+            $tarResult = & tar -xf "wxWidgets.zip" -C "D:\temp" 2>&1
+            if ($LASTEXITCODE -eq 0) {
+              $extractionSuccess = $true
+              Write-Host "tar extraction successful"
+            } else {
+              Write-Host "tar command failed with exit code: $LASTEXITCODE"
+              Write-Host "tar output: $tarResult"
+            }
           } catch {
-            Write-Host "ERROR: Both extraction methods failed: $($_.Exception.Message)"
-            exit 1
+            Write-Host "tar extraction failed: $($_.Exception.Message)"
           }
+        }
+        
+        # Method 3: Try .NET extraction as last resort
+        if (-not $extractionSuccess) {
+          Write-Host "Trying .NET ZipFile extraction..."
+          try {
+            Add-Type -AssemblyName System.IO.Compression.FileSystem
+            [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD\wxWidgets.zip", "D:\temp")
+            $extractionSuccess = $true
+            Write-Host ".NET extraction successful"
+          } catch {
+            Write-Host ".NET extraction failed: $($_.Exception.Message)"
+          }
+        }
+        
+        if (-not $extractionSuccess) {
+          Write-Host "ERROR: All extraction methods failed"
+          exit 1
         }
         
         # Check what was extracted
@@ -115,7 +163,7 @@ jobs:
         
         # Clean up temp directory and zip file
         Remove-Item -Path "D:\temp" -Recurse -Force -ErrorAction SilentlyContinue
-        Remove-Item -Path "wxWidgets-3.2.4.zip" -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "wxWidgets.zip" -Force -ErrorAction SilentlyContinue
         
         # Verify wxWidgets directory exists and has content
         if (-not (Test-Path "D:\wxWidgets")) {
