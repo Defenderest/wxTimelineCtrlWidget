@@ -276,7 +276,9 @@ EXCLUDE                = themes
 
 EXCLUDE_SYMLINKS       = NO
 
-EXCLUDE_PATTERNS       =
+EXCLUDE_PATTERNS       = */*MainFrame.* \
+                         */*App.* \
+						 */SampleData.*
 
 EXCLUDE_SYMBOLS        =
 

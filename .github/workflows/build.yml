@@ -1,0 +1,211 @@
+name: Build
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+        platform: [x64]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+    
+    - name: Setup CMake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '3.16'
+    
+    - name: Cache wxWidgets
+      id: cache-wxwidgets
+      uses: actions/cache@v4
+      with:
+        path: |
+          D:\wxWidgets
+          D:\wxWidgets-build
+        key: ${{ runner.os }}-wxwidgets-3.2.4-${{ matrix.platform }}
+        restore-keys: |
+          ${{ runner.os }}-wxwidgets-3.2.4-
+          ${{ runner.os }}-wxwidgets-
+    
+    - name: Download and build wxWidgets
+      if: steps.cache-wxwidgets.outputs.cache-hit != 'true'
+      run: |
+        # Download wxWidgets
+        Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4.zip" -OutFile "wxWidgets-3.2.4.zip"
+        Expand-Archive -Path "wxWidgets-3.2.4.zip" -DestinationPath "D:\"
+        Rename-Item -Path "D:\wxWidgets-3.2.4" -NewName "wxWidgets"
+        
+        # Create build directory
+        New-Item -ItemType Directory -Path "D:\wxWidgets-build" -Force
+        
+        # Build wxWidgets
+        cd "D:\wxWidgets-build"
+        cmake -G "Visual Studio 17 2022" -A ${{ matrix.platform }} -DCMAKE_BUILD_TYPE=Release `
+              -DwxBUILD_SHARED=OFF `
+              -DwxBUILD_SAMPLES=OFF `
+              -DwxBUILD_TESTS=OFF `
+              -DwxBUILD_DEMOS=OFF `
+              -DwxBUILD_BENCHMARKS=OFF `
+              -DwxUSE_WEBVIEW=OFF `
+              -DwxUSE_MEDIACTRL=OFF `
+              "D:\wxWidgets"
+        
+        cmake --build . --config Release --parallel
+        cmake --build . --config Debug --parallel
+      shell: powershell
+    
+    - name: Set WXWIN environment variable
+      run: |
+        echo "WXWIN=D:\wxWidgets" >> $env:GITHUB_ENV
+      shell: powershell
+    
+    - name: Verify setup
+      run: |
+        cd build
+        .\verify_setup.bat
+      shell: cmd
+    
+    - name: Build project
+      run: |
+        cd build
+        .\build.bat ${{ matrix.configuration }}
+      shell: cmd
+    
+    - name: Test executable
+      run: |
+        $exePath = "build\generated\${{ matrix.configuration }}\wxTimelineCtrlTest.exe"
+        if (Test-Path $exePath) {
+          Write-Host "✓ Executable built successfully: $exePath" -ForegroundColor Green
+          $fileInfo = Get-Item $exePath
+          Write-Host "File size: $([math]::Round($fileInfo.Length/1KB, 2)) KB" -ForegroundColor Cyan
+        } else {
+          Write-Host "✗ Executable not found: $exePath" -ForegroundColor Red
+          exit 1
+        }
+      shell: powershell
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: wxTimelineCtrl-${{ matrix.configuration }}-${{ matrix.platform }}
+        path: |
+          build/generated/${{ matrix.configuration }}/wxTimelineCtrlTest.exe
+          build/generated/${{ matrix.configuration }}/wxTimelineCtrlTest.pdb
+        retention-days: 30
+    
+    - name: Upload logs on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-logs-${{ matrix.configuration }}-${{ matrix.platform }}
+        path: |
+          build/generated/**/*.log
+          build/generated/**/CMakeFiles/*.log
+        retention-days: 7
+
+  build-linux:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          libwxgtk3.2-dev \
+          libwxbase3.2-dev \
+          wx-common \
+          pkg-config
+    
+    - name: Build project (Linux)
+      run: |
+        cd build
+        mkdir -p generated
+        cd generated
+        cmake -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} ..
+        make -j$(nproc)
+    
+    - name: Test executable (Linux)
+      run: |
+        if [ -f "build/generated/wxTimelineCtrlTest" ]; then
+          echo "✓ Executable built successfully: build/generated/wxTimelineCtrlTest"
+          ls -lh build/generated/wxTimelineCtrlTest
+        else
+          echo "✗ Executable not found"
+          exit 1
+        fi
+    
+    - name: Upload build artifacts (Linux)
+      uses: actions/upload-artifact@v4
+      with:
+        name: wxTimelineCtrl-Linux-${{ matrix.configuration }}
+        path: |
+          build/generated/wxTimelineCtrlTest
+        retention-days: 30
+
+  build-macos:
+    runs-on: macos-latest
+    
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Install dependencies
+      run: |
+        brew install wxwidgets cmake
+    
+    - name: Build project (macOS)
+      run: |
+        cd build
+        mkdir -p generated
+        cd generated
+        cmake -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} ..
+        make -j$(sysctl -n hw.ncpu)
+    
+    - name: Test executable (macOS)
+      run: |
+        if [ -f "build/generated/wxTimelineCtrlTest" ]; then
+          echo "✓ Executable built successfully: build/generated/wxTimelineCtrlTest"
+          ls -lh build/generated/wxTimelineCtrlTest
+        else
+          echo "✗ Executable not found"
+          exit 1
+        fi
+    
+    - name: Upload build artifacts (macOS)
+      uses: actions/upload-artifact@v4
+      with:
+        name: wxTimelineCtrl-macOS-${{ matrix.configuration }}
+        path: |
+          build/generated/wxTimelineCtrlTest
+        retention-days: 30
