@@ -27,7 +27,7 @@ jobs:
     - name: Setup CMake
       uses: jwlawson/actions-setup-cmake@v2
       with:
-        cmake-version: '3.16'
+        cmake-version: '3.28.1'
     
     - name: Cache wxWidgets
       id: cache-wxwidgets

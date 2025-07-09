@@ -1,6 +1,6 @@
 param(
     [string]$Configuration = "Release",
-    [string]$Generator = "Visual Studio 17 2022",
+    [string]$Generator = "",
     [string]$Platform = "x64"
 )
 
@@ -19,6 +19,40 @@ if (-not $env:WXWIN) {
 
 Write-Host "Using wxWidgets from: $env:WXWIN" -ForegroundColor Green
 
+# Auto-detect Visual Studio generator if not specified
+if ([string]::IsNullOrEmpty($Generator)) {
+    Write-Host "Detecting available Visual Studio generators..." -ForegroundColor Yellow
+    
+    # Get list of available generators
+    $generatorList = & cmake --help 2>$null | Select-String "Visual Studio"
+    
+    # Priority order: VS 2022, VS 2019, VS 2017, VS 2015
+    $preferredGenerators = @(
+        "Visual Studio 17 2022",
+        "Visual Studio 16 2019",
+        "Visual Studio 15 2017",
+        "Visual Studio 14 2015"
+    )
+    
+    $Generator = $null
+    foreach ($preferred in $preferredGenerators) {
+        if ($generatorList -match [regex]::Escape($preferred)) {
+            $Generator = $preferred
+            break
+        }
+    }
+    
+    if ([string]::IsNullOrEmpty($Generator)) {
+        Write-Host "ERROR: No compatible Visual Studio generator found!" -ForegroundColor Red
+        Write-Host "Available generators:" -ForegroundColor Yellow
+        & cmake --help | Select-String "Visual Studio"
+        Read-Host "Press Enter to exit"
+        exit 1
+    }
+    
+    Write-Host "Selected generator: $Generator" -ForegroundColor Green
+}
+
 # Create build directory if it doesn't exist
 $buildDir = "generated"
 if (-not (Test-Path $buildDir)) {
@@ -34,10 +68,24 @@ Write-Host "Target platform: $Platform" -ForegroundColor Yellow
 # Generate build files
 Write-Host "Generating CMake build files..." -ForegroundColor Yellow
 try {
-    if ($Platform -eq "x64") {
-        & cmake -G $Generator -A x64 ..
+    # Handle different Visual Studio versions and their architecture syntax
+    if ($Generator -match "Visual Studio (16|17)") {
+        # VS 2019 and VS 2022 use -A flag for architecture
+        if ($Platform -eq "x64") {
+            & cmake -G $Generator -A x64 ..
+        } else {
+            & cmake -G $Generator -A Win32 ..
+        }
+    } elseif ($Generator -match "Visual Studio (14|15)") {
+        # VS 2015 and VS 2017 use Win64 suffix for 64-bit
+        if ($Platform -eq "x64") {
+            & cmake -G "$Generator Win64" ..
+        } else {
+            & cmake -G $Generator ..
+        }
     } else {
-        & cmake -G $Generator -A Win32 ..
+        # Fallback for other generators
+        & cmake -G $Generator ..
     }
     
     if ($LASTEXITCODE -ne 0) {
