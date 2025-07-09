@@ -1,0 +1,6 @@
+#ifndef _WXTIMELINECTRL_INL
+#define _WXTIMELINECTRL_INL
+
+
+
+#endif // _WXTIMELINECTRL_INL
