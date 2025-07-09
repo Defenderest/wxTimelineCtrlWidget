@@ -202,6 +202,93 @@ jobs:
         .\build.bat Debug
       shell: cmd
     
+    - name: Copy wxWidgets DLLs (Debug)
+      run: |
+        $debugDir = "build\generated\Debug"
+        $wxBinDir = "D:\wxWidgets\lib\vc_x64_dll"
+        
+        Write-Host "Copying wxWidgets DLLs to Debug output directory..." -ForegroundColor Yellow
+        
+        # Create output directory if it doesn't exist
+        if (-not (Test-Path $debugDir)) {
+          New-Item -ItemType Directory -Path $debugDir -Force | Out-Null
+        }
+        
+        # Find and copy wxWidgets DLLs
+        $dllPatterns = @(
+          "wxmsw*u_core_*.dll",
+          "wxmsw*u_adv_*.dll",
+          "wxmsw*u_aui_*.dll",
+          "wxmsw*u_base_*.dll",
+          "wxmsw*u_html_*.dll",
+          "wxmsw*u_media_*.dll",
+          "wxmsw*u_net_*.dll",
+          "wxmsw*u_propgrid_*.dll",
+          "wxmsw*u_ribbon_*.dll",
+          "wxmsw*u_richtext_*.dll",
+          "wxmsw*u_stc_*.dll",
+          "wxmsw*u_webview_*.dll",
+          "wxmsw*u_xml_*.dll",
+          "wxmsw*u_xrc_*.dll",
+          "wxmsw*u_gl_*.dll",
+          "wxmsw*u_qa_*.dll"
+        )
+        
+        $copiedDlls = @()
+        foreach ($pattern in $dllPatterns) {
+          $dlls = Get-ChildItem -Path $wxBinDir -Filter $pattern -ErrorAction SilentlyContinue
+          foreach ($dll in $dlls) {
+            $debugDll = $dll.Name -replace "_vc", "d_vc"  # Debug version naming
+            $debugDllPath = Join-Path $wxBinDir $debugDll
+            
+            # Try debug version first, fall back to release version
+            if (Test-Path $debugDllPath) {
+              Copy-Item $debugDllPath $debugDir -Force
+              $copiedDlls += $debugDll
+              Write-Host "  Copied: $debugDll" -ForegroundColor Green
+            } elseif (Test-Path $dll.FullName) {
+              Copy-Item $dll.FullName $debugDir -Force
+              $copiedDlls += $dll.Name
+              Write-Host "  Copied: $($dll.Name) (release version)" -ForegroundColor Yellow
+            }
+          }
+        }
+        
+        # Copy Visual C++ runtime DLLs if available
+        $vcRedistDlls = @(
+          "msvcp140.dll",
+          "msvcp140_1.dll",
+          "msvcp140_2.dll",
+          "vcruntime140.dll",
+          "vcruntime140_1.dll"
+        )
+        
+        $systemDirs = @(
+          "C:\Windows\System32",
+          "C:\Windows\SysWOW64"
+        )
+        
+        foreach ($dll in $vcRedistDlls) {
+          foreach ($sysDir in $systemDirs) {
+            $dllPath = Join-Path $sysDir $dll
+            if (Test-Path $dllPath) {
+              Copy-Item $dllPath $debugDir -Force -ErrorAction SilentlyContinue
+              Write-Host "  Copied: $dll (VC++ runtime)" -ForegroundColor Cyan
+              break
+            }
+          }
+        }
+        
+        Write-Host "Total DLLs copied: $($copiedDlls.Count)" -ForegroundColor Green
+        
+        # List all files in debug directory
+        Write-Host "Files in Debug directory:" -ForegroundColor Cyan
+        Get-ChildItem -Path $debugDir | Sort-Object Name | ForEach-Object {
+          $size = if ($_.PSIsContainer) { "<DIR>" } else { "$([math]::Round($_.Length/1KB, 1)) KB" }
+          Write-Host "  $($_.Name) ($size)" -ForegroundColor White
+        }
+      shell: powershell
+    
     - name: Test executable (Debug)
       run: |
         $exePath = "build\generated\Debug\wxTimelineCtrlTest.exe"
@@ -220,8 +307,7 @@ jobs:
       with:
         name: wxTimelineCtrl-Windows-Debug-x64
         path: |
-          build/generated/Debug/wxTimelineCtrlTest.exe
-          build/generated/Debug/wxTimelineCtrlTest.pdb
+          build/generated/Debug/
         retention-days: 30
 
   build-windows-release:
@@ -419,6 +505,85 @@ jobs:
         .\build.bat Release
       shell: cmd
     
+    - name: Copy wxWidgets DLLs (Release)
+      run: |
+        $releaseDir = "build\generated\Release"
+        $wxBinDir = "D:\wxWidgets\lib\vc_x64_dll"
+        
+        Write-Host "Copying wxWidgets DLLs to Release output directory..." -ForegroundColor Yellow
+        
+        # Create output directory if it doesn't exist
+        if (-not (Test-Path $releaseDir)) {
+          New-Item -ItemType Directory -Path $releaseDir -Force | Out-Null
+        }
+        
+        # Find and copy wxWidgets DLLs
+        $dllPatterns = @(
+          "wxmsw*u_core_*.dll",
+          "wxmsw*u_adv_*.dll",
+          "wxmsw*u_aui_*.dll",
+          "wxmsw*u_base_*.dll",
+          "wxmsw*u_html_*.dll",
+          "wxmsw*u_media_*.dll",
+          "wxmsw*u_net_*.dll",
+          "wxmsw*u_propgrid_*.dll",
+          "wxmsw*u_ribbon_*.dll",
+          "wxmsw*u_richtext_*.dll",
+          "wxmsw*u_stc_*.dll",
+          "wxmsw*u_webview_*.dll",
+          "wxmsw*u_xml_*.dll",
+          "wxmsw*u_xrc_*.dll",
+          "wxmsw*u_gl_*.dll",
+          "wxmsw*u_qa_*.dll"
+        )
+        
+        $copiedDlls = @()
+        foreach ($pattern in $dllPatterns) {
+          $dlls = Get-ChildItem -Path $wxBinDir -Filter $pattern -ErrorAction SilentlyContinue
+          foreach ($dll in $dlls) {
+            if (Test-Path $dll.FullName) {
+              Copy-Item $dll.FullName $releaseDir -Force
+              $copiedDlls += $dll.Name
+              Write-Host "  Copied: $($dll.Name)" -ForegroundColor Green
+            }
+          }
+        }
+        
+        # Copy Visual C++ runtime DLLs if available
+        $vcRedistDlls = @(
+          "msvcp140.dll",
+          "msvcp140_1.dll",
+          "msvcp140_2.dll",
+          "vcruntime140.dll",
+          "vcruntime140_1.dll"
+        )
+        
+        $systemDirs = @(
+          "C:\Windows\System32",
+          "C:\Windows\SysWOW64"
+        )
+        
+        foreach ($dll in $vcRedistDlls) {
+          foreach ($sysDir in $systemDirs) {
+            $dllPath = Join-Path $sysDir $dll
+            if (Test-Path $dllPath) {
+              Copy-Item $dllPath $releaseDir -Force -ErrorAction SilentlyContinue
+              Write-Host "  Copied: $dll (VC++ runtime)" -ForegroundColor Cyan
+              break
+            }
+          }
+        }
+        
+        Write-Host "Total DLLs copied: $($copiedDlls.Count)" -ForegroundColor Green
+        
+        # List all files in release directory
+        Write-Host "Files in Release directory:" -ForegroundColor Cyan
+        Get-ChildItem -Path $releaseDir | Sort-Object Name | ForEach-Object {
+          $size = if ($_.PSIsContainer) { "<DIR>" } else { "$([math]::Round($_.Length/1KB, 1)) KB" }
+          Write-Host "  $($_.Name) ($size)" -ForegroundColor White
+        }
+      shell: powershell
+
     - name: Test executable (Release)
       run: |
         $exePath = "build\generated\Release\wxTimelineCtrlTest.exe"
@@ -437,8 +602,7 @@ jobs:
       with:
         name: wxTimelineCtrl-Windows-Release-x64
         path: |
-          build/generated/Release/wxTimelineCtrlTest.exe
-          build/generated/Release/wxTimelineCtrlTest.pdb
+          build/generated/Release/
         retention-days: 30
 
   upload-logs-on-failure:
