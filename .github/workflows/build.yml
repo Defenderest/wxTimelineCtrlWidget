@@ -46,38 +46,88 @@ jobs:
       run: |
         # Download wxWidgets
         Write-Host "Downloading wxWidgets..."
-        Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4.zip" -OutFile "wxWidgets-3.2.4.zip"
+        try {
+          Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4.zip" -OutFile "wxWidgets-3.2.4.zip" -TimeoutSec 300
+        } catch {
+          Write-Host "ERROR: Failed to download wxWidgets: $($_.Exception.Message)"
+          exit 1
+        }
         
-        # Extract wxWidgets
+        # Verify download
+        if (-not (Test-Path "wxWidgets-3.2.4.zip")) {
+          Write-Host "ERROR: Downloaded file not found"
+          exit 1
+        }
+        
+        $fileSize = (Get-Item "wxWidgets-3.2.4.zip").Length
+        Write-Host "Downloaded file size: $([math]::Round($fileSize/1MB, 2)) MB"
+        
+        # Clean up any existing directories
+        Remove-Item -Path "D:\temp" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "D:\wxWidgets" -Recurse -Force -ErrorAction SilentlyContinue
+        
+        # Create temp directory
+        New-Item -ItemType Directory -Path "D:\temp" -Force
+        
+        # Extract wxWidgets with better error handling
         Write-Host "Extracting wxWidgets..."
-        Expand-Archive -Path "wxWidgets-3.2.4.zip" -DestinationPath "D:\temp" -Force
+        try {
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD\wxWidgets-3.2.4.zip", "D:\temp")
+        } catch {
+          Write-Host "ERROR: Failed to extract wxWidgets: $($_.Exception.Message)"
+          Write-Host "Trying alternative extraction method..."
+          try {
+            Expand-Archive -Path "wxWidgets-3.2.4.zip" -DestinationPath "D:\temp" -Force
+          } catch {
+            Write-Host "ERROR: Both extraction methods failed: $($_.Exception.Message)"
+            exit 1
+          }
+        }
         
-        # Check what was extracted and rename appropriately
+        # Check what was extracted
+        Write-Host "Checking extracted contents..."
+        if (-not (Test-Path "D:\temp")) {
+          Write-Host "ERROR: Temp directory not found after extraction"
+          exit 1
+        }
+        
         $extractedItems = Get-ChildItem -Path "D:\temp" -Directory
-        Write-Host "Extracted items: $($extractedItems.Name -join ', ')"
+        Write-Host "Extracted directories: $($extractedItems.Name -join ', ')"
         
         # Find the wxWidgets directory (it might be wxWidgets-3.2.4 or just wxWidgets)
         $wxDir = $extractedItems | Where-Object { $_.Name -like "wxWidgets*" } | Select-Object -First 1
         if ($wxDir) {
             Write-Host "Found wxWidgets directory: $($wxDir.Name)"
-            Move-Item -Path $wxDir.FullName -Destination "D:\wxWidgets" -Force
+            Write-Host "Moving $($wxDir.FullName) to D:\wxWidgets"
+            try {
+              Move-Item -Path $wxDir.FullName -Destination "D:\wxWidgets" -Force
+            } catch {
+              Write-Host "ERROR: Failed to move wxWidgets directory: $($_.Exception.Message)"
+              exit 1
+            }
         } else {
             Write-Host "ERROR: Could not find wxWidgets directory in extracted files"
-            Get-ChildItem -Path "D:\temp" -Recurse | Select-Object Name, FullName | Format-Table
+            Write-Host "Available directories:"
+            Get-ChildItem -Path "D:\temp" -Recurse -Directory | Select-Object Name, FullName | Format-Table
             exit 1
         }
         
-        # Clean up temp directory
+        # Clean up temp directory and zip file
         Remove-Item -Path "D:\temp" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "wxWidgets-3.2.4.zip" -Force -ErrorAction SilentlyContinue
         
-        # Create build directory
-        New-Item -ItemType Directory -Path "D:\wxWidgets-build" -Force
-        
-        # Verify wxWidgets directory exists
+        # Verify wxWidgets directory exists and has content
         if (-not (Test-Path "D:\wxWidgets")) {
             Write-Host "ERROR: wxWidgets directory not found at D:\wxWidgets"
             exit 1
         }
+        
+        $wxFiles = Get-ChildItem -Path "D:\wxWidgets" -File | Measure-Object
+        Write-Host "wxWidgets directory contains $($wxFiles.Count) files"
+        
+        # Create build directory
+        New-Item -ItemType Directory -Path "D:\wxWidgets-build" -Force
         
         # Build wxWidgets
         Write-Host "Building wxWidgets..."
@@ -193,20 +243,47 @@ jobs:
     
     - name: Test executable (Linux)
       run: |
-        if [ -f "build/generated/wxTimelineCtrlTest" ]; then
-          echo "✓ Executable built successfully: build/generated/wxTimelineCtrlTest"
-          ls -lh build/generated/wxTimelineCtrlTest
-        else
-          echo "✗ Executable not found"
+        # Check multiple possible locations for the executable
+        echo "Searching for executable..."
+        find build -name "wxTimelineCtrlTest*" -type f 2>/dev/null || echo "No files found with find"
+        
+        # List contents of build directory
+        echo "Contents of build/generated:"
+        ls -la build/generated/ || echo "build/generated directory not found"
+        
+        # Check common locations
+        possible_paths=(
+          "build/generated/wxTimelineCtrlTest"
+          "build/generated/app/wxTimelineCtrlTest"
+          "build/generated/${{ matrix.configuration }}/wxTimelineCtrlTest"
+          "build/generated/Debug/wxTimelineCtrlTest"
+          "build/generated/Release/wxTimelineCtrlTest"
+        )
+        
+        executable_found=false
+        for path in "${possible_paths[@]}"; do
+          if [ -f "$path" ]; then
+            echo "✓ Executable found: $path"
+            ls -lh "$path"
+            executable_found=true
+            break
+          fi
+        done
+        
+        if [ "$executable_found" = false ]; then
+          echo "✗ Executable not found in any expected location"
+          echo "Full directory structure:"
+          find build -type f -name "*" 2>/dev/null || echo "Find command failed"
           exit 1
         fi
     
     - name: Upload build artifacts (Linux)
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: wxTimelineCtrl-Linux-${{ matrix.configuration }}
         path: |
-          build/generated/wxTimelineCtrlTest
+          build/generated/**/wxTimelineCtrlTest
         retention-days: 30
 
   build-macos:
@@ -240,18 +317,45 @@ jobs:
     
     - name: Test executable (macOS)
       run: |
-        if [ -f "build/generated/wxTimelineCtrlTest" ]; then
-          echo "✓ Executable built successfully: build/generated/wxTimelineCtrlTest"
-          ls -lh build/generated/wxTimelineCtrlTest
-        else
-          echo "✗ Executable not found"
+        # Check multiple possible locations for the executable
+        echo "Searching for executable..."
+        find build -name "wxTimelineCtrlTest*" -type f 2>/dev/null || echo "No files found with find"
+        
+        # List contents of build directory
+        echo "Contents of build/generated:"
+        ls -la build/generated/ || echo "build/generated directory not found"
+        
+        # Check common locations
+        possible_paths=(
+          "build/generated/wxTimelineCtrlTest"
+          "build/generated/app/wxTimelineCtrlTest"
+          "build/generated/${{ matrix.configuration }}/wxTimelineCtrlTest"
+          "build/generated/Debug/wxTimelineCtrlTest"
+          "build/generated/Release/wxTimelineCtrlTest"
+        )
+        
+        executable_found=false
+        for path in "${possible_paths[@]}"; do
+          if [ -f "$path" ]; then
+            echo "✓ Executable found: $path"
+            ls -lh "$path"
+            executable_found=true
+            break
+          fi
+        done
+        
+        if [ "$executable_found" = false ]; then
+          echo "✗ Executable not found in any expected location"
+          echo "Full directory structure:"
+          find build -type f -name "*" 2>/dev/null || echo "Find command failed"
           exit 1
         fi
     
     - name: Upload build artifacts (macOS)
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: wxTimelineCtrl-macOS-${{ matrix.configuration }}
         path: |
-          build/generated/wxTimelineCtrlTest
+          build/generated/**/wxTimelineCtrlTest
         retention-days: 30
