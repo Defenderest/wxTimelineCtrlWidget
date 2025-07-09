@@ -35,59 +35,53 @@ jobs:
       with:
         path: |
           D:\wxWidgets
-          D:\wxWidgets-build
-        key: ${{ runner.os }}-wxwidgets-3.2.4-${{ matrix.platform }}
+        key: ${{ runner.os }}-wxwidgets-precompiled-3.3.0-${{ matrix.platform }}
         restore-keys: |
-          ${{ runner.os }}-wxwidgets-3.2.4-
+          ${{ runner.os }}-wxwidgets-precompiled-3.3.0-
+          ${{ runner.os }}-wxwidgets-precompiled-
           ${{ runner.os }}-wxwidgets-
     
-    - name: Download and build wxWidgets
+    - name: Download and extract wxWidgets
       if: steps.cache-wxwidgets.outputs.cache-hit != 'true'
       run: |
-        # Download wxWidgets (try stable 3.2.3 first, then 3.2.4)
-        Write-Host "Downloading wxWidgets..."
-        $downloadSuccess = $false
-        $wxVersion = ""
+        # Download pre-compiled wxWidgets for Windows (more reliable than source)
+        Write-Host "Downloading pre-compiled wxWidgets..."
         
-        # Try wxWidgets 3.2.3 first (more stable)
+        # Try wxWidgets 3.3.0 pre-compiled version first
         try {
-          Write-Host "Trying wxWidgets 3.2.3..."
-          Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.3/wxWidgets-3.2.3.zip" -OutFile "wxWidgets.zip" -TimeoutSec 300
-          $wxVersion = "3.2.3"
+          Write-Host "Downloading wxWidgets 3.3.0 pre-compiled..."
+          Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.0/wxMSW-3.3.0_vc14x_x64_Dev.7z" -OutFile "wxWidgets.7z" -TimeoutSec 300
+          $wxVersion = "3.3.0"
           $downloadSuccess = $true
         } catch {
-          Write-Host "wxWidgets 3.2.3 download failed: $($_.Exception.Message)"
-          Write-Host "Trying wxWidgets 3.2.4..."
+          Write-Host "wxWidgets 3.3.0 download failed: $($_.Exception.Message)"
+          Write-Host "Trying wxWidgets 3.2.4 pre-compiled..."
           try {
-            Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4.zip" -OutFile "wxWidgets.zip" -TimeoutSec 300
+            Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxMSW-3.2.4_vc14x_x64_Dev.7z" -OutFile "wxWidgets.7z" -TimeoutSec 300
             $wxVersion = "3.2.4"
             $downloadSuccess = $true
           } catch {
-            Write-Host "ERROR: Failed to download wxWidgets: $($_.Exception.Message)"
+            Write-Host "ERROR: Failed to download pre-compiled wxWidgets: $($_.Exception.Message)"
             exit 1
           }
         }
         
         # Verify download
-        if (-not (Test-Path "wxWidgets.zip")) {
+        if (-not (Test-Path "wxWidgets.7z")) {
           Write-Host "ERROR: Downloaded file not found"
           exit 1
         }
         
-        $fileSize = (Get-Item "wxWidgets.zip").Length
+        $fileSize = (Get-Item "wxWidgets.7z").Length
         Write-Host "Downloaded wxWidgets $wxVersion, file size: $([math]::Round($fileSize/1MB, 2)) MB"
         
         # Clean up any existing directories
-        Remove-Item -Path "D:\temp" -Recurse -Force -ErrorAction SilentlyContinue
         Remove-Item -Path "D:\wxWidgets" -Recurse -Force -ErrorAction SilentlyContinue
         
-        # Create temp directory
-        New-Item -ItemType Directory -Path "D:\temp" -Force
-        
-        # Extract wxWidgets using 7-Zip (most reliable for Windows)
+        # Extract wxWidgets using 7-Zip (required for .7z files)
         Write-Host "Extracting wxWidgets using 7-Zip..."
         
-        # Check if 7-Zip is available
+        # Find 7-Zip installation
         $sevenZipPath = "C:\Program Files\7-Zip\7z.exe"
         if (-not (Test-Path $sevenZipPath)) {
           # Try alternative locations
@@ -96,113 +90,31 @@ jobs:
             # Try to find 7z in PATH
             $sevenZipPath = (Get-Command 7z -ErrorAction SilentlyContinue).Source
             if (-not $sevenZipPath) {
-              Write-Host "7-Zip not found, trying PowerShell extraction..."
-              try {
-                Expand-Archive -Path "wxWidgets.zip" -DestinationPath "D:\temp" -Force
-                Write-Host "PowerShell extraction successful"
-              } catch {
-                Write-Host "ERROR: PowerShell extraction failed: $($_.Exception.Message)"
-                exit 1
-              }
-            }
-          }
-        }
-        
-        # Extract using 7-Zip if available
-        if ($sevenZipPath -and (Test-Path $sevenZipPath)) {
-          Write-Host "Using 7-Zip at: $sevenZipPath"
-          try {
-            $extractResult = & "$sevenZipPath" x "wxWidgets.zip" "-oD:\temp" -y 2>&1
-            if ($LASTEXITCODE -eq 0) {
-              Write-Host "7-Zip extraction successful"
-            } else {
-              Write-Host "7-Zip extraction failed with exit code: $LASTEXITCODE"
-              Write-Host "7-Zip output: $extractResult"
-              
-              # Fallback to PowerShell
-              Write-Host "Trying PowerShell extraction as fallback..."
-              try {
-                Expand-Archive -Path "wxWidgets.zip" -DestinationPath "D:\temp" -Force
-                Write-Host "PowerShell extraction successful"
-              } catch {
-                Write-Host "ERROR: PowerShell extraction also failed: $($_.Exception.Message)"
-                exit 1
-              }
-            }
-          } catch {
-            Write-Host "ERROR: 7-Zip extraction failed: $($_.Exception.Message)"
-            
-            # Fallback to PowerShell
-            Write-Host "Trying PowerShell extraction as fallback..."
-            try {
-              Expand-Archive -Path "wxWidgets.zip" -DestinationPath "D:\temp" -Force
-              Write-Host "PowerShell extraction successful"
-            } catch {
-              Write-Host "ERROR: PowerShell extraction also failed: $($_.Exception.Message)"
+              Write-Host "ERROR: 7-Zip not found. 7-Zip is required to extract .7z files."
+              Write-Host "Please install 7-Zip or ensure it's in the PATH."
               exit 1
             }
           }
         }
         
-        # Check what was extracted
-        Write-Host "Checking extracted contents..."
-        if (-not (Test-Path "D:\temp")) {
-          Write-Host "ERROR: Temp directory not found after extraction"
+        # Extract using 7-Zip directly to D:\wxWidgets
+        Write-Host "Using 7-Zip at: $sevenZipPath"
+        try {
+          $extractResult = & "$sevenZipPath" x "wxWidgets.7z" "-oD:\wxWidgets" -y 2>&1
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "7-Zip extraction successful"
+          } else {
+            Write-Host "7-Zip extraction failed with exit code: $LASTEXITCODE"
+            Write-Host "7-Zip output: $extractResult"
+            exit 1
+          }
+        } catch {
+          Write-Host "ERROR: 7-Zip extraction failed: $($_.Exception.Message)"
           exit 1
         }
         
-        # Show all extracted contents for debugging
-        Write-Host "All extracted items:"
-        Get-ChildItem -Path "D:\temp" -Recurse | Select-Object Name, FullName, PSIsContainer | Format-Table -AutoSize
-        
-        # Get directories only
-        $extractedItems = Get-ChildItem -Path "D:\temp" -Directory
-        Write-Host "Extracted directories: $($extractedItems.Name -join ', ')"
-        
-        # Find the wxWidgets directory with multiple possible patterns
-        $wxDir = $null
-        $possiblePatterns = @("wxWidgets*", "wxwidgets*", "*wxWidgets*", "*wx*")
-        
-        foreach ($pattern in $possiblePatterns) {
-          $wxDir = $extractedItems | Where-Object { $_.Name -like $pattern } | Select-Object -First 1
-          if ($wxDir) {
-            Write-Host "Found wxWidgets directory with pattern '$pattern': $($wxDir.Name)"
-            break
-          }
-        }
-        
-        # If no directory found, try to find any directory that contains CMakeLists.txt or configure files
-        if (-not $wxDir) {
-          Write-Host "No wxWidgets directory found by name, checking for CMakeLists.txt..."
-          foreach ($dir in $extractedItems) {
-            if ((Test-Path "$($dir.FullName)\CMakeLists.txt") -or (Test-Path "$($dir.FullName)\configure")) {
-              $wxDir = $dir
-              Write-Host "Found wxWidgets directory by CMakeLists.txt: $($wxDir.Name)"
-              break
-            }
-          }
-        }
-        
-        if ($wxDir) {
-            Write-Host "Moving $($wxDir.FullName) to D:\wxWidgets"
-            try {
-              Move-Item -Path $wxDir.FullName -Destination "D:\wxWidgets" -Force
-            } catch {
-              Write-Host "ERROR: Failed to move wxWidgets directory: $($_.Exception.Message)"
-              exit 1
-            }
-        } else {
-            Write-Host "ERROR: Could not find wxWidgets directory in extracted files"
-            Write-Host "Available directories:"
-            Get-ChildItem -Path "D:\temp" -Recurse -Directory | Select-Object Name, FullName | Format-Table
-            Write-Host "Files in root:"
-            Get-ChildItem -Path "D:\temp" -File | Select-Object Name, FullName | Format-Table
-            exit 1
-        }
-        
-        # Clean up temp directory and zip file
-        Remove-Item -Path "D:\temp" -Recurse -Force -ErrorAction SilentlyContinue
-        Remove-Item -Path "wxWidgets.zip" -Force -ErrorAction SilentlyContinue
+        # Clean up 7z file
+        Remove-Item -Path "wxWidgets.7z" -Force -ErrorAction SilentlyContinue
         
         # Verify wxWidgets directory exists and has content
         if (-not (Test-Path "D:\wxWidgets")) {
@@ -210,27 +122,15 @@ jobs:
             exit 1
         }
         
+        # Show extracted contents
+        Write-Host "Extracted wxWidgets contents:"
+        Get-ChildItem -Path "D:\wxWidgets" -Directory | Select-Object Name | Format-Table -AutoSize
+        
         $wxFiles = Get-ChildItem -Path "D:\wxWidgets" -File | Measure-Object
         Write-Host "wxWidgets directory contains $($wxFiles.Count) files"
         
-        # Create build directory
-        New-Item -ItemType Directory -Path "D:\wxWidgets-build" -Force
-        
-        # Build wxWidgets
-        Write-Host "Building wxWidgets..."
-        cd "D:\wxWidgets-build"
-        cmake -G "Visual Studio 17 2022" -A ${{ matrix.platform }} -DCMAKE_BUILD_TYPE=Release `
-              -DwxBUILD_SHARED=OFF `
-              -DwxBUILD_SAMPLES=OFF `
-              -DwxBUILD_TESTS=OFF `
-              -DwxBUILD_DEMOS=OFF `
-              -DwxBUILD_BENCHMARKS=OFF `
-              -DwxUSE_WEBVIEW=OFF `
-              -DwxUSE_MEDIACTRL=OFF `
-              "D:\wxWidgets"
-        
-        cmake --build . --config Release --parallel
-        cmake --build . --config Debug --parallel
+        # Pre-compiled binaries are ready to use - no build step needed!
+        Write-Host "Pre-compiled wxWidgets is ready to use!"
       shell: powershell
     
     - name: Set WXWIN environment variable
