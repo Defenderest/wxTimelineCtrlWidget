@@ -162,11 +162,11 @@ jobs:
         foreach ($dir in $criticalDirs) {
           $dirPath = "D:\wxWidgets\$dir"
           if (Test-Path $dirPath) {
-            Write-Host "✓ Found $dir directory" -ForegroundColor Green
+            Write-Host "[OK] Found $dir directory" -ForegroundColor Green
             $itemCount = (Get-ChildItem -Path $dirPath -Recurse | Measure-Object).Count
             Write-Host "  Contains $itemCount items" -ForegroundColor Cyan
           } else {
-            Write-Host "✗ Missing $dir directory" -ForegroundColor Red
+            Write-Host "[ERROR] Missing $dir directory" -ForegroundColor Red
             exit 1
           }
         }
@@ -174,9 +174,9 @@ jobs:
         # Check for wx.h specifically
         $wxHeaderPath = "D:\wxWidgets\include\wx\wx.h"
         if (Test-Path $wxHeaderPath) {
-          Write-Host "✓ Found wx.h header file" -ForegroundColor Green
+          Write-Host "[OK] Found wx.h header file" -ForegroundColor Green
         } else {
-          Write-Host "✗ wx.h header file not found at $wxHeaderPath" -ForegroundColor Red
+          Write-Host "[ERROR] wx.h header file not found at $wxHeaderPath" -ForegroundColor Red
           Write-Host "Available include subdirectories:"
           Get-ChildItem -Path "D:\wxWidgets\include" -Directory -ErrorAction SilentlyContinue | Select-Object Name | Format-Table -AutoSize
           exit 1
@@ -186,7 +186,7 @@ jobs:
         Write-Host "wxWidgets directory contains $($wxFiles.Count) files total"
         
         # Pre-compiled binaries with headers are ready to use!
-        Write-Host "✓ Pre-compiled wxWidgets with headers is ready to use!" -ForegroundColor Green
+        Write-Host "[SUCCESS] Pre-compiled wxWidgets with headers is ready to use!" -ForegroundColor Green
       shell: powershell
     
     - name: Set WXWIN environment variable
@@ -210,11 +210,11 @@ jobs:
       run: |
         $exePath = "build\generated\${{ matrix.configuration }}\wxTimelineCtrlTest.exe"
         if (Test-Path $exePath) {
-          Write-Host "✓ Executable built successfully: $exePath" -ForegroundColor Green
+          Write-Host "[OK] Executable built successfully: $exePath" -ForegroundColor Green
           $fileInfo = Get-Item $exePath
           Write-Host "File size: $([math]::Round($fileInfo.Length/1KB, 2)) KB" -ForegroundColor Cyan
         } else {
-          Write-Host "✗ Executable not found: $exePath" -ForegroundColor Red
+          Write-Host "[ERROR] Executable not found: $exePath" -ForegroundColor Red
           exit 1
         }
       shell: powershell
@@ -306,7 +306,7 @@ jobs:
         executable_found=false
         for path in "${possible_paths[@]}"; do
           if [ -f "$path" ]; then
-            echo "✓ Executable found: $path"
+            echo "[OK] Executable found: $path"
             ls -lh "$path"
             executable_found=true
             break
@@ -314,7 +314,7 @@ jobs:
         done
         
         if [ "$executable_found" = false ]; then
-          echo "✗ Executable not found in any expected location"
+          echo "[ERROR] Executable not found in any expected location"
           echo "Full directory structure:"
           find build -type f -name "*" 2>/dev/null || echo "Find command failed"
           exit 1
