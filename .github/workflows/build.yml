@@ -84,7 +84,7 @@ jobs:
         
         $devSize = (Get-Item "wxWidgets-dev.7z").Length
         $headersSize = (Get-Item "wxWidgets-headers.7z").Length
-        Write-Host "Downloaded wxWidgets $wxVersion:"
+        Write-Host "Downloaded wxWidgets ${wxVersion}:"
         Write-Host "  Dev archive: $([math]::Round($devSize/1MB, 2)) MB"
         Write-Host "  Headers archive: $([math]::Round($headersSize/1MB, 2)) MB"
         
