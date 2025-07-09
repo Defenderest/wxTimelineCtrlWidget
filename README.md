@@ -2,6 +2,7 @@
 
 [![Build Status](https://github.com/T-Rex/wxTimelineCtrl/workflows/Build/badge.svg)](https://github.com/T-Rex/wxTimelineCtrl/actions)
 [![Windows Build](https://github.com/T-Rex/wxTimelineCtrl/workflows/Build/badge.svg?branch=main)](https://github.com/T-Rex/wxTimelineCtrl/actions)
+[![Documentation](https://github.com/T-Rex/wxTimelineCtrl/workflows/Generate%20and%20Deploy%20Doxygen%20Docs/badge.svg)](https://t-rex.github.io/wxTimelineCtrl/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://en.cppreference.com/w/cpp/17)
 [![wxWidgets](https://img.shields.io/badge/wxWidgets-3.0%2B-green.svg)](https://www.wxwidgets.org/)
@@ -18,6 +19,7 @@ A powerful, interactive timeline control component for wxWidgets applications. T
 - [Building the Project](#building-the-project)
 - [Using the Sample Application](#using-the-sample-application)
 - [Library Usage](#library-usage)
+- [Documentation](#documentation)
 - [Development](#development)
 - [Continuous Integration](#continuous-integration)
 - [Troubleshooting](#troubleshooting)
@@ -334,6 +336,54 @@ void MyFrame::OnTimelineItemDeleted(wxCommandEvent& event)
 }
 ```
 
+## 📖 Documentation
+
+### API Documentation
+
+Comprehensive API documentation is automatically generated using Doxygen and is available online:
+
+🔗 **[View API Documentation](https://t-rex.github.io/wxTimelineCtrl/)**
+
+The documentation includes:
+
+- **Class Reference**: Complete API documentation for all classes and methods
+- **Usage Examples**: Code samples and implementation patterns
+- **Integration Guide**: Step-by-step integration instructions
+- **Architecture Overview**: System design and component relationships
+
+### Documentation Features
+
+- **Searchable Interface**: Find classes, methods, and topics quickly
+- **Cross-Referenced**: Navigate between related components easily
+- **Code Examples**: Practical usage examples throughout
+- **Modern Theme**: Clean, responsive design with dark/light mode support
+- **Auto-Generated**: Always up-to-date with the latest code changes
+
+### Generating Documentation Locally
+
+To generate the documentation locally:
+
+```bash
+# Install Doxygen (if not already installed)
+# Windows: Download from https://www.doxygen.nl/
+# Linux: sudo apt-get install doxygen
+# macOS: brew install doxygen
+
+# Generate documentation
+doxygen Doxyfile
+
+# Open the generated documentation
+# Windows: start docs/html/index.html
+# Linux/macOS: open docs/html/index.html
+```
+
+### Documentation Updates
+
+The online documentation is automatically updated when:
+- Changes are pushed to the `main` branch
+- The Doxygen workflow completes successfully
+- New API changes are merged
+
 ## 🔧 Development
 
 ### CMake Targets
@@ -369,7 +419,7 @@ This project uses GitHub Actions for automated building and testing across multi
 ### Supported Platforms
 
 - **Windows** (latest) - Visual Studio 2022, x64
-- **Linux** (Ubuntu latest) - GCC with wxWidgets 3.2
+- **Linux** (Ubuntu latest) - GCC with wxWidgets 3.0/3.2
 - **macOS** (latest) - Clang with Homebrew wxWidgets
 
 ### Build Matrix
