@@ -150,7 +150,7 @@ void wxTimelineCtrlTestMainFrame::CreateControls()
     SetMinSize(wxSize(270, 250));
 }
 
-void wxTimelineCtrlTestMainFrame::OnAddClick(wxCommandEvent& event)
+void wxTimelineCtrlTestMainFrame::OnAddClick(wxCommandEvent& )
 {
     wxDialog dlg(this, wxID_ANY, _("Add Timeline Item"), wxDefaultPosition, wxDefaultSize,
         wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
@@ -261,7 +261,7 @@ void wxTimelineCtrlTestMainFrame::OnAddClick(wxCommandEvent& event)
         }
     }
 }
-void wxTimelineCtrlTestMainFrame::OnDeleteClick(wxCommandEvent& event)
+void wxTimelineCtrlTestMainFrame::OnDeleteClick(wxCommandEvent& )
 {
     wxDialog dlg(this, wxID_ANY, _("Select Items to Delete"), wxDefaultPosition, wxSize(400, 300),
         wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
@@ -373,7 +373,7 @@ void wxTimelineCtrlTestMainFrame::OnDeleteClick(wxCommandEvent& event)
     }
 }
 
-void wxTimelineCtrlTestMainFrame::OnExit(wxCommandEvent& event)
+void wxTimelineCtrlTestMainFrame::OnExit(wxCommandEvent& )
 {
     Close(true);
 }
@@ -409,7 +409,7 @@ void wxTimelineCtrlTestMainFrame::UpdateUI()
         GetStatusBar()->SetStatusText(wxString::Format(_("Items: %zu"), m_DataCount), 1);
     }
 }
-void wxTimelineCtrlTestMainFrame::OnTimelineItemSelected(wxCommandEvent& event)
+void wxTimelineCtrlTestMainFrame::OnTimelineItemSelected(wxCommandEvent& )
 {
     UpdateUI();
 

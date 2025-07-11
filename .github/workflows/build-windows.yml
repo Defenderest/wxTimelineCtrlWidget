@@ -214,47 +214,41 @@ jobs:
           New-Item -ItemType Directory -Path $debugDir -Force | Out-Null
         }
         
-        # Find and copy wxWidgets DLLs
-        $dllPatterns = @(
-          "wxmsw*u_core_*.dll",
-          "wxmsw*u_adv_*.dll",
-          "wxmsw*u_aui_*.dll",
-          "wxmsw*u_base_*.dll",
-          "wxmsw*u_html_*.dll",
-          "wxmsw*u_media_*.dll",
-          "wxmsw*u_net_*.dll",
-          "wxmsw*u_propgrid_*.dll",
-          "wxmsw*u_ribbon_*.dll",
-          "wxmsw*u_richtext_*.dll",
-          "wxmsw*u_stc_*.dll",
-          "wxmsw*u_webview_*.dll",
-          "wxmsw*u_xml_*.dll",
-          "wxmsw*u_xrc_*.dll",
-          "wxmsw*u_gl_*.dll",
-          "wxmsw*u_qa_*.dll"
-        )
+        # Verify wxWidgets DLL directory exists
+        if (-not (Test-Path $wxBinDir)) {
+          Write-Host "ERROR: wxWidgets DLL directory not found: $wxBinDir" -ForegroundColor Red
+          Write-Host "Available directories under D:\wxWidgets\lib:"
+          Get-ChildItem -Path "D:\wxWidgets\lib" -Directory -ErrorAction SilentlyContinue | Select-Object Name
+          exit 1
+        }
         
-        $copiedDlls = @()
-        foreach ($pattern in $dllPatterns) {
-          $dlls = Get-ChildItem -Path $wxBinDir -Filter $pattern -ErrorAction SilentlyContinue
-          foreach ($dll in $dlls) {
-            $debugDll = $dll.Name -replace "_vc", "d_vc"  # Debug version naming
-            $debugDllPath = Join-Path $wxBinDir $debugDll
-            
-            # Try debug version first, fall back to release version
-            if (Test-Path $debugDllPath) {
-              Copy-Item $debugDllPath $debugDir -Force
-              $copiedDlls += $debugDll
-              Write-Host "  Copied: $debugDll" -ForegroundColor Green
-            } elseif (Test-Path $dll.FullName) {
+        # Copy ALL wxWidgets DLLs (both debug and release versions)
+        Write-Host "Available wxWidgets DLLs:" -ForegroundColor Cyan
+        $allDlls = Get-ChildItem -Path $wxBinDir -Filter "*.dll" -ErrorAction SilentlyContinue
+        
+        if ($allDlls.Count -eq 0) {
+          Write-Host "WARNING: No DLLs found in $wxBinDir" -ForegroundColor Yellow
+          Write-Host "Contents of $wxBinDir:"
+          Get-ChildItem -Path $wxBinDir -ErrorAction SilentlyContinue
+        } else {
+          # For Debug build, prefer debug versions (with 'd' suffix) but copy all available
+          $copiedDlls = @()
+          foreach ($dll in $allDlls) {
+            try {
               Copy-Item $dll.FullName $debugDir -Force
               $copiedDlls += $dll.Name
-              Write-Host "  Copied: $($dll.Name) (release version)" -ForegroundColor Yellow
+              $dllType = if ($dll.Name -match ".*d_vc.*") { "(debug)" } else { "(release)" }
+              Write-Host "  Copied: $($dll.Name) $dllType" -ForegroundColor Green
+            } catch {
+              Write-Host "  Failed to copy: $($dll.Name) - $($_.Exception.Message)" -ForegroundColor Red
             }
           }
+          
+          Write-Host "Total wxWidgets DLLs copied: $($copiedDlls.Count)" -ForegroundColor Green
         }
         
         # Copy Visual C++ runtime DLLs if available
+        Write-Host "Copying Visual C++ runtime DLLs..." -ForegroundColor Yellow
         $vcRedistDlls = @(
           "msvcp140.dll",
           "msvcp140_1.dll",
@@ -272,17 +266,19 @@ jobs:
           foreach ($sysDir in $systemDirs) {
             $dllPath = Join-Path $sysDir $dll
             if (Test-Path $dllPath) {
-              Copy-Item $dllPath $debugDir -Force -ErrorAction SilentlyContinue
-              Write-Host "  Copied: $dll (VC++ runtime)" -ForegroundColor Cyan
-              break
+              try {
+                Copy-Item $dllPath $debugDir -Force -ErrorAction SilentlyContinue
+                Write-Host "  Copied: $dll (VC++ runtime)" -ForegroundColor Cyan
+                break
+              } catch {
+                Write-Host "  Failed to copy: $dll - $($_.Exception.Message)" -ForegroundColor Red
+              }
             }
           }
         }
         
-        Write-Host "Total DLLs copied: $($copiedDlls.Count)" -ForegroundColor Green
-        
         # List all files in debug directory
-        Write-Host "Files in Debug directory:" -ForegroundColor Cyan
+        Write-Host "\nFiles in Debug directory:" -ForegroundColor Cyan
         Get-ChildItem -Path $debugDir | Sort-Object Name | ForEach-Object {
           $size = if ($_.PSIsContainer) { "<DIR>" } else { "$([math]::Round($_.Length/1KB, 1)) KB" }
           Write-Host "  $($_.Name) ($size)" -ForegroundColor White
@@ -517,39 +513,41 @@ jobs:
           New-Item -ItemType Directory -Path $releaseDir -Force | Out-Null
         }
         
-        # Find and copy wxWidgets DLLs
-        $dllPatterns = @(
-          "wxmsw*u_core_*.dll",
-          "wxmsw*u_adv_*.dll",
-          "wxmsw*u_aui_*.dll",
-          "wxmsw*u_base_*.dll",
-          "wxmsw*u_html_*.dll",
-          "wxmsw*u_media_*.dll",
-          "wxmsw*u_net_*.dll",
-          "wxmsw*u_propgrid_*.dll",
-          "wxmsw*u_ribbon_*.dll",
-          "wxmsw*u_richtext_*.dll",
-          "wxmsw*u_stc_*.dll",
-          "wxmsw*u_webview_*.dll",
-          "wxmsw*u_xml_*.dll",
-          "wxmsw*u_xrc_*.dll",
-          "wxmsw*u_gl_*.dll",
-          "wxmsw*u_qa_*.dll"
-        )
+        # Verify wxWidgets DLL directory exists
+        if (-not (Test-Path $wxBinDir)) {
+          Write-Host "ERROR: wxWidgets DLL directory not found: $wxBinDir" -ForegroundColor Red
+          Write-Host "Available directories under D:\wxWidgets\lib:"
+          Get-ChildItem -Path "D:\wxWidgets\lib" -Directory -ErrorAction SilentlyContinue | Select-Object Name
+          exit 1
+        }
         
-        $copiedDlls = @()
-        foreach ($pattern in $dllPatterns) {
-          $dlls = Get-ChildItem -Path $wxBinDir -Filter $pattern -ErrorAction SilentlyContinue
-          foreach ($dll in $dlls) {
-            if (Test-Path $dll.FullName) {
+        # Copy ALL wxWidgets DLLs (both debug and release versions)
+        Write-Host "Available wxWidgets DLLs:" -ForegroundColor Cyan
+        $allDlls = Get-ChildItem -Path $wxBinDir -Filter "*.dll" -ErrorAction SilentlyContinue
+        
+        if ($allDlls.Count -eq 0) {
+          Write-Host "WARNING: No DLLs found in $wxBinDir" -ForegroundColor Yellow
+          Write-Host "Contents of $wxBinDir:"
+          Get-ChildItem -Path $wxBinDir -ErrorAction SilentlyContinue
+        } else {
+          # For Release build, copy all available DLLs
+          $copiedDlls = @()
+          foreach ($dll in $allDlls) {
+            try {
               Copy-Item $dll.FullName $releaseDir -Force
               $copiedDlls += $dll.Name
-              Write-Host "  Copied: $($dll.Name)" -ForegroundColor Green
+              $dllType = if ($dll.Name -match ".*d_vc.*") { "(debug)" } else { "(release)" }
+              Write-Host "  Copied: $($dll.Name) $dllType" -ForegroundColor Green
+            } catch {
+              Write-Host "  Failed to copy: $($dll.Name) - $($_.Exception.Message)" -ForegroundColor Red
             }
           }
+          
+          Write-Host "Total wxWidgets DLLs copied: $($copiedDlls.Count)" -ForegroundColor Green
         }
         
         # Copy Visual C++ runtime DLLs if available
+        Write-Host "Copying Visual C++ runtime DLLs..." -ForegroundColor Yellow
         $vcRedistDlls = @(
           "msvcp140.dll",
           "msvcp140_1.dll",
@@ -567,17 +565,19 @@ jobs:
           foreach ($sysDir in $systemDirs) {
             $dllPath = Join-Path $sysDir $dll
             if (Test-Path $dllPath) {
-              Copy-Item $dllPath $releaseDir -Force -ErrorAction SilentlyContinue
-              Write-Host "  Copied: $dll (VC++ runtime)" -ForegroundColor Cyan
-              break
+              try {
+                Copy-Item $dllPath $releaseDir -Force -ErrorAction SilentlyContinue
+                Write-Host "  Copied: $dll (VC++ runtime)" -ForegroundColor Cyan
+                break
+              } catch {
+                Write-Host "  Failed to copy: $dll - $($_.Exception.Message)" -ForegroundColor Red
+              }
             }
           }
         }
         
-        Write-Host "Total DLLs copied: $($copiedDlls.Count)" -ForegroundColor Green
-        
         # List all files in release directory
-        Write-Host "Files in Release directory:" -ForegroundColor Cyan
+        Write-Host "\nFiles in Release directory:" -ForegroundColor Cyan
         Get-ChildItem -Path $releaseDir | Sort-Object Name | ForEach-Object {
           $size = if ($_.PSIsContainer) { "<DIR>" } else { "$([math]::Round($_.Length/1KB, 1)) KB" }
           Write-Host "  $($_.Name) ($size)" -ForegroundColor White

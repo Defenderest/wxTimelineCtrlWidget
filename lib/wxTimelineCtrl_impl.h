@@ -195,7 +195,7 @@ void wxTimelineCtrl<T>::DrawTimeline(wxDC& dc)
         try {
             m_artProvider->DrawItem(dc, item.Rect, m_rectTimelineTrack, item, false, false);
         }
-        catch (const std::exception& e) {
+        catch (const std::exception& ) {
         }
     }
 
@@ -313,7 +313,7 @@ void wxTimelineCtrl<T>::DrawScroller(wxDC& dc)
     {
         if (!m_dropIndicatorRectScroller.IsEmpty() && m_detachedDragItemOriginalIndex != -1)
         {
-            wxDCClipper clip(dc, m_rectScrollerTrack);
+            //wxDCClipper clip(dc, m_rectScrollerTrack);
             TimelineItem<T> previewItem = m_items[m_detachedDragItemOriginalIndex];
             if (m_isSnapping)
             {
@@ -355,7 +355,7 @@ void wxTimelineCtrl<T>::RecalcRects()
 {
     m_rectBackground = GetClientRect();
 
-    int timelineHeight = 80;
+    //int timelineHeight = 80;
     int scrollerHeight = 60;
     int gapHeight = 8;
 
@@ -1033,12 +1033,15 @@ void wxTimelineCtrl<T>::OnTimelineUp(const wxPoint& pos, ElementType type)
     {
         m_activeTask->State = TimelineElementState::Normal;
     }
+    wxUnusedVar(pos);
+    wxUnusedVar(type);
 }
 
 template<typename T>
 void wxTimelineCtrl<T>::OnTimelineDrag(const wxPoint& pos, ElementType type)
 {
     OnTimelineItemMove(pos);
+    wxUnusedVar(type);
 }
 
 template<typename T>
@@ -1763,7 +1766,7 @@ void wxTimelineCtrl<T>::OnMouseUp(ElementType typeFromMouseDown, const wxPoint& 
     m_mouseDown = false;
 
 
-    ElementType previousSelectedElement = m_selectedElement;
+    //ElementType previousSelectedElement = m_selectedElement;
     m_selectedElement = ET_NONE;
 
     ElementType typeUnderMouseNow = GetElementFromPos(pos);
@@ -1956,6 +1959,7 @@ void wxTimelineCtrl<T>::OnVisibleFrameDrag(const wxPoint& pos)
 template<typename T>
 void wxTimelineCtrl<T>::OnScrollerDown(const wxPoint& pos)
 {
+    wxUnusedVar(pos);
     // Do nothing to prevent teleporting and dragging the visible frame on scroller track click.
     // The frame can still be dragged by clicking on it directly.
 }
@@ -2024,8 +2028,8 @@ void wxTimelineCtrl<T>::CalcMaxVisibleDuration()
 template<typename T>
 void wxTimelineCtrl<T>::SetFirstVisibleTime(int seconds)
 {
-    int oldMainFirstVisibleTime = m_firstVisibleTime;
-    int oldScrollerFirstVisibleTime = m_scrollerFirstVisibleTime;
+    //int oldMainFirstVisibleTime = m_firstVisibleTime;
+    //int oldScrollerFirstVisibleTime = m_scrollerFirstVisibleTime;
 
     m_firstVisibleTime = seconds;
 

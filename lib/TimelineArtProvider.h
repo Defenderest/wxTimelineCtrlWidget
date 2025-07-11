@@ -39,19 +39,23 @@ public:
     {
         dc.GradientFillLinear(rect, wxColour(83, 83, 83), wxColour(163, 163, 163), wxDOWN);
     }
-    virtual void DrawTimelineBackground(wxDC& dc, const wxRect& rect) {}
+    virtual void DrawTimelineBackground(wxDC& dc, const wxRect& rect) { wxUnusedVar(dc);  wxUnusedVar(rect); }
     virtual void DrawTimelineTrack(wxDC& dc, const wxRect& rect)
     {
         dc.SetPen(m_PenTimelineMain);
         DrawGradientRoundedRect(dc, rect, m_Radius, wxGraphicsGradientStops(wxColour(55, 55, 55), wxColour(93, 93, 93)), wxDOWN);
     }
-    virtual void DrawScrollerBackground(wxDC& dc, const wxRect& rect) {}
+    virtual void DrawScrollerBackground(wxDC& dc, const wxRect& rect) { wxUnusedVar(dc); wxUnusedVar(rect); }
     virtual void DrawScrollerTrack(wxDC& dc, const wxRect& rect)
     {
         dc.SetPen(m_PenScrollerMain);
         DrawGradientRoundedRect(dc, rect, m_Radius, wxGraphicsGradientStops(wxColour(55, 55, 55), wxColour(93, 93, 93)), wxDOWN);
     }
-    virtual void DrawGap(wxDC& dc, const wxRect& rTimeline, const wxRect& rVisibleFrame) {}
+    virtual void DrawGap(wxDC& dc, const wxRect& rTimeline, const wxRect& rVisibleFrame) {
+        wxUnusedVar(dc);
+		wxUnusedVar(rTimeline);
+		wxUnusedVar(rVisibleFrame);
+    }
 
     virtual void DrawLeftArrow(wxDC& dc, const wxRect& rect, TimelineElementState state)
     {

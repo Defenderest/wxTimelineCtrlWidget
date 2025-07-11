@@ -56,7 +56,7 @@ public:
     {
     }
 
-    void OnPaint(wxPaintEvent& event)
+    void OnPaint(wxPaintEvent& )
     {
         if (!m_itemVisual.Data || !m_artProviderRef || !m_buffer.IsOk()) {
             wxPaintDC dc(this);
