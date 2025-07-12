@@ -36,6 +36,8 @@ A powerful, interactive timeline control component for wxWidgets applications. T
 - **Cross-Platform**: Built on wxWidgets for Windows, macOS, and Linux
 - **CMake Build System**: Modern, professional build configuration
 
+![Timeline Demo](https://github.com/T-Rex/wxTimelineCtrl/blob/main/assets/screenshots/wxTimelineCtrl_demo.gif)
+
 ## 🚀 Quick Start
 
 ### Prerequisites
