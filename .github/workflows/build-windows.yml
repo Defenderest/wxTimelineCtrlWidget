@@ -216,7 +216,7 @@ jobs:
         
         # Verify wxWidgets DLL directory exists
         if (-not (Test-Path $wxBinDir)) {
-          Write-Host "ERROR: wxWidgets DLL directory not found: $wxBinDir" -ForegroundColor Red
+          Write-Host "ERROR: wxWidgets DLL directory not found: ${wxBinDir}" -ForegroundColor Red
           Write-Host "Available directories under D:\wxWidgets\lib:"
           Get-ChildItem -Path "D:\wxWidgets\lib" -Directory -ErrorAction SilentlyContinue | Select-Object Name
           exit 1
@@ -227,8 +227,8 @@ jobs:
         $allDlls = Get-ChildItem -Path $wxBinDir -Filter "*.dll" -ErrorAction SilentlyContinue
         
         if ($allDlls.Count -eq 0) {
-          Write-Host "WARNING: No DLLs found in $wxBinDir" -ForegroundColor Yellow
-          Write-Host "Contents of $wxBinDir:"
+          Write-Host "WARNING: No DLLs found in ${wxBinDir}" -ForegroundColor Yellow
+          Write-Host "Contents of ${wxBinDir}:"
           Get-ChildItem -Path $wxBinDir -ErrorAction SilentlyContinue
         } else {
           # For Debug build, prefer debug versions (with 'd' suffix) but copy all available
@@ -515,7 +515,7 @@ jobs:
         
         # Verify wxWidgets DLL directory exists
         if (-not (Test-Path $wxBinDir)) {
-          Write-Host "ERROR: wxWidgets DLL directory not found: $wxBinDir" -ForegroundColor Red
+          Write-Host "ERROR: wxWidgets DLL directory not found: ${wxBinDir}" -ForegroundColor Red
           Write-Host "Available directories under D:\wxWidgets\lib:"
           Get-ChildItem -Path "D:\wxWidgets\lib" -Directory -ErrorAction SilentlyContinue | Select-Object Name
           exit 1
@@ -526,8 +526,8 @@ jobs:
         $allDlls = Get-ChildItem -Path $wxBinDir -Filter "*.dll" -ErrorAction SilentlyContinue
         
         if ($allDlls.Count -eq 0) {
-          Write-Host "WARNING: No DLLs found in $wxBinDir" -ForegroundColor Yellow
-          Write-Host "Contents of $wxBinDir:"
+          Write-Host "WARNING: No DLLs found in ${wxBinDir}" -ForegroundColor Yellow
+          Write-Host "Contents of ${wxBinDir}:"
           Get-ChildItem -Path $wxBinDir -ErrorAction SilentlyContinue
         } else {
           # For Release build, copy all available DLLs
