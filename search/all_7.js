@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['calcarrowsstate_0',['CalcArrowsState',['../classwxTimelineCtrl.html#af7658f3f2ce41a88e2913bb09d6c131c',1,'wxTimelineCtrl']]],
+  ['calcmaxvisibleduration_1',['CalcMaxVisibleDuration',['../classwxTimelineCtrl.html#a8edcda73cdb920e04e539fc800ca736a',1,'wxTimelineCtrl']]],
+  ['calculateniceinterval_2',['CalculateNiceInterval',['../classTimelineArtProvider.html#a494f9d0a5ee09043c4772d8495ad6298',1,'TimelineArtProvider']]],
+  ['centerontime_3',['CenterOnTime',['../classwxTimelineCtrl.html#a09a1d72e17827c57c72100b6a0953fe6',1,'wxTimelineCtrl']]],
+  ['changelastelement_4',['ChangeLastElement',['../classwxTimelineCtrl.html#a9b2f7e27058fc71d4cb4331450479aac',1,'wxTimelineCtrl']]],
+  ['ci_20build_5',['Local vs CI Build',['../md_README.html#autotoc_md49',1,'']]],
+  ['clampfirstvisibletime_6',['ClampFirstVisibleTime',['../classwxTimelineCtrl.html#a75312b105609156ba7549c779450fda7',1,'wxTimelineCtrl']]],
+  ['classes_7',['Key Classes',['../md_README.html#autotoc_md27',1,'']]],
+  ['clearitems_8',['ClearItems',['../classwxTimelineCtrl.html#ad3a9465e86287a5cbcdb59cb108dfa34',1,'wxTimelineCtrl']]],
+  ['clearselection_9',['ClearSelection',['../classwxTimelineCtrl.html#a6aa861d9155be891ec884a07893ec091',1,'wxTimelineCtrl']]],
+  ['cmake_20build_10',['Option 2: Manual CMake Build',['../md_README.html#autotoc_md15',1,'']]],
+  ['cmake_20integration_11',['CMake Integration',['../md_README.html#autotoc_md23',1,'']]],
+  ['cmake_20targets_12',['CMake Targets',['../md_README.html#autotoc_md38',1,'']]],
+  ['colour_13',['Colour',['../classTimelineItem.html#a1219cb20f524fcf2a231f7fc547cd51b',1,'TimelineItem']]],
+  ['common_20issues_14',['Common Issues',['../md_README.html#autotoc_md51',1,'']]],
+  ['configuration_15',['configuration',['../md_README.html#autotoc_md39',1,'Build Configuration'],['../md_README.html#autotoc_md42',1,'Custom Build Configuration']]],
+  ['contents_16',['📋 Table of Contents',['../md_README.html#autotoc_md5',1,'']]],
+  ['continuous_20integration_17',['🔄 Continuous Integration',['../md_README.html#autotoc_md43',1,'']]],
+  ['copy_20headers_18',['Method 2: Copy Headers',['../md_README.html#autotoc_md25',1,'']]],
+  ['create_19',['Create',['../classwxTimelineCtrl.html#adcb6c11aebed2e5abf9edfae8186c2e6',1,'wxTimelineCtrl']]],
+  ['createroundregions_20',['CreateRoundRegions',['../classTimelineArtProvider.html#ab6c4e5bb40dab201155cb1c30bfbd6e2',1,'TimelineArtProvider']]],
+  ['custom_20build_20configuration_21',['Custom Build Configuration',['../md_README.html#autotoc_md42',1,'']]]
+];
