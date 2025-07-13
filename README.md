@@ -430,12 +430,12 @@ The CI pipeline builds the following configurations:
 
 | Platform | Configuration | Architecture | Status |
 |----------|---------------|--------------|--------|
-| Windows  | Debug         | x64          | [![Build Status](https://github.com/T-Rex/wxTimelineCtrl/workflows/Build/badge.svg)](https://github.com/T-Rex/wxTimelineCtrl/actions) |
-| Windows  | Release       | x64          | [![Build Status](https://github.com/T-Rex/wxTimelineCtrl/workflows/Build/badge.svg)](https://github.com/T-Rex/wxTimelineCtrl/actions) |
-| Linux    | Debug         | x64          | [![Build Status](https://github.com/T-Rex/wxTimelineCtrl/workflows/Build/badge.svg)](https://github.com/T-Rex/wxTimelineCtrl/actions) |
-| Linux    | Release       | x64          | [![Build Status](https://github.com/T-Rex/wxTimelineCtrl/workflows/Build/badge.svg)](https://github.com/T-Rex/wxTimelineCtrl/actions) |
-| macOS    | Debug         | x64          | [![Build Status](https://github.com/T-Rex/wxTimelineCtrl/workflows/Build/badge.svg)](https://github.com/T-Rex/wxTimelineCtrl/actions) |
-| macOS    | Release       | x64          | [![Build Status](https://github.com/T-Rex/wxTimelineCtrl/workflows/Build/badge.svg)](https://github.com/T-Rex/wxTimelineCtrl/actions) |
+| Windows  | Debug         | x64          | [![Windows CI](https://github.com/T-Rex/wxTimelineCtrl/actions/workflows/build-windows.yml/badge.svg)](https://github.com/T-Rex/wxTimelineCtrl/actions/workflows/build-windows.yml) |
+| Windows  | Release       | x64          | [![Windows CI](https://github.com/T-Rex/wxTimelineCtrl/actions/workflows/build-windows.yml/badge.svg)](https://github.com/T-Rex/wxTimelineCtrl/actions/workflows/build-windows.yml) |
+| Linux    | Debug         | x64          | [![Linux CI](https://github.com/T-Rex/wxTimelineCtrl/actions/workflows/build-linux.yml/badge.svg)](https://github.com/T-Rex/wxTimelineCtrl/actions/workflows/build-linux.yml) |
+| Linux    | Release       | x64          | [![Linux CI](https://github.com/T-Rex/wxTimelineCtrl/actions/workflows/build-linux.yml/badge.svg)](https://github.com/T-Rex/wxTimelineCtrl/actions/workflows/build-linux.yml) |
+| macOS    | Debug         | x64          | [![macOS CI](https://github.com/T-Rex/wxTimelineCtrl/actions/workflows/build-macos.yml/badge.svg)](https://github.com/T-Rex/wxTimelineCtrl/actions/workflows/build-macos.yml) |
+| macOS    | Release       | x64          | [![macOS CI](https://github.com/T-Rex/wxTimelineCtrl/actions/workflows/build-macos.yml/badge.svg)](https://github.com/T-Rex/wxTimelineCtrl/actions/workflows/build-macos.yml) |
 
 ### Build Triggers
 
