@@ -205,7 +205,7 @@ jobs:
     - name: Copy wxWidgets DLLs (Debug)
       run: |
         $debugDir = "build\generated\Debug"
-        $wxBinDir = "D:\wxWidgets\lib\vc_x64_dll"
+        $wxBinDir = "D:\wxWidgets\lib\vc14x_x64_dll"
         
         Write-Host "Copying wxWidgets DLLs to Debug output directory..." -ForegroundColor Yellow
         
@@ -504,7 +504,7 @@ jobs:
     - name: Copy wxWidgets DLLs (Release)
       run: |
         $releaseDir = "build\generated\Release"
-        $wxBinDir = "D:\wxWidgets\lib\vc_x64_dll"
+        $wxBinDir = "D:\wxWidgets\lib\vc14x_x64_dll"
         
         Write-Host "Copying wxWidgets DLLs to Release output directory..." -ForegroundColor Yellow
         
